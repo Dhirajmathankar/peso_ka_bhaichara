@@ -9,6 +9,7 @@ import { routes } from './route/route-routing.module';
 import { HomeComponent } from './home/home.component';
 import { YouWillGetComponent } from './you-will-get/you-will-get.component';
 import { YouWillGiveComponent } from './you-will-give/you-will-give.component';
+import { AddActionsDrawerComponent } from './add-actions-drawer/add-actions-drawer.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { YouWillGiveComponent } from './you-will-give/you-will-give.component';
     SignUpComponent,
     HomeComponent,
     YouWillGetComponent,
-    YouWillGiveComponent
+    YouWillGiveComponent,
+    AddActionsDrawerComponent
   ],
   imports: [
     BrowserModule,

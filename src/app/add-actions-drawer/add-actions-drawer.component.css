@@ -1,0 +1,59 @@
+/* बॉटम शीट का नीचे से ऊपर आने वाला एनीमेशन */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.28s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+/* फॉर्म बदलने पर होने वाला स्मूथ फेड-इन इफेक्ट */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* वॉयस रिकॉर्डर के लिए पल्स एनीमेशन (Glowing Ripple effect) */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(52, 211, 153, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0);
+  }
+}
+
+.pulse-animation {
+  animation: pulseGlow 1.8s infinite;
+}
+
+/* मोबाइल पर टैप हाइलाइट हटाना */
+.main-container {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ड्रॉपडाउन से डिफ़ॉल्ट एरो हटाकर कस्टम लुक सेट करना */
+select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='white'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 20px;
+}
