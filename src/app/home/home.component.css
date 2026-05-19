@@ -1,0 +1,19 @@
+/* Google Material Icons के लिए इसे index.html में जोड़ें */
+/* <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> */
+
+/* Custom Animations and Smoothness */
+.main-container {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Scrollbar छिपाने के लिए (अगर ज़रूरत हो) */
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* Card hover effects */
+section div:hover {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+    border-color: rgba(52, 211, 153, 0.4);
+}
