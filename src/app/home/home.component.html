@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-[#061a14] text-white p-4 font-sans pb-20">
+<div class="min-h-screen bg-[#061a14] text-white p-4 font-sans pb-20" >
   
   <header class="flex justify-between items-center mb-6 mt-4">
     <div>
@@ -21,14 +21,14 @@
       <p class="text-xs text-gray-400 uppercase font-semibold mb-1">You Will Give</p>
       <div class="flex justify-between items-center">
         <h2 class="text-xl font-bold text-red-400">₹4,200.00</h2>
-        <span class="text-red-400">→</span>
+        <span class="text-red-400" (click)="switchTab('you-will-give')">→</span>
       </div>
     </div>
     <div class="bg-[#0a2a20] p-4 rounded-2xl border border-green-900/40 shadow-xl">
       <p class="text-xs text-gray-400 uppercase font-semibold mb-1">You Will Get</p>
       <div class="flex justify-between items-center">
         <h2 class="text-xl font-bold text-green-400">₹8,500.00</h2>
-        <span class="text-green-400">→</span>
+        <span class="text-green-400" (click)="switchTab('you-will-get')">→</span>
       </div>
     </div>
     <div class="bg-[#0a2a20] p-4 rounded-2xl border border-green-900/40 shadow-xl">
@@ -128,4 +128,16 @@
     <div class="flex flex-col items-center text-gray-500"><span class="material-icons">person_outline</span><span class="text-[8px] uppercase font-bold">Profile</span></div>
   </nav>
 
+</div>
+
+
+
+
+
+<div *ngIf="tabName == 'you-will-get'">
+  <app-you-will-get (close)="closeDrawer()"></app-you-will-get>
+</div>
+
+<div *ngIf="tabName == 'you-will-give'">
+  <app-you-will-give (close)="closeDrawer()"></app-you-will-give>
 </div>

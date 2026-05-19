@@ -7,4 +7,13 @@ import { Component } from '@angular/core';
 })
 export class HomeComponent {
 
+  tabName: string = '';
+
+  switchTab(tab: string) {
+    this.tabName = tab;
+  }
+
+  closeDrawer() {
+    this.tabName = ''; 
+  }
 }
