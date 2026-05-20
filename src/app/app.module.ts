@@ -10,6 +10,7 @@ import { HomeComponent } from './home/home.component';
 import { YouWillGetComponent } from './you-will-get/you-will-get.component';
 import { YouWillGiveComponent } from './you-will-give/you-will-give.component';
 import { AddActionsDrawerComponent } from './add-actions-drawer/add-actions-drawer.component';
+import { DailyReportComponent } from './daily-report/daily-report.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { AddActionsDrawerComponent } from './add-actions-drawer/add-actions-draw
     HomeComponent,
     YouWillGetComponent,
     YouWillGiveComponent,
-    AddActionsDrawerComponent
+    AddActionsDrawerComponent,
+    DailyReportComponent
   ],
   imports: [
     BrowserModule,

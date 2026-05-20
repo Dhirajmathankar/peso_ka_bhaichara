@@ -1,0 +1,21 @@
+/* फ़ेड-इन इफ़ेक्ट ताकि क्लीन और उधार मोड स्विच करते समय स्मूथ ट्रांजिशन दिखे */
+@keyframes fadeInEffect {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeInEffect 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* बटन क्लिक करने पर आने वाला टैप इफ़ेक्ट डिसेबल */
+button {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
