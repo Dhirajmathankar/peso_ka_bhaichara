@@ -52,7 +52,21 @@ export class LoginComponent {
         this.router.navigate(['/home']);
       },
       error: (err) => {
-         this.router.navigate(['/home']);
+       
+        const userId = 'userNo-01';
+    const email = "dhirajmathankar@gmail.com";
+    const phone = "6261109366";
+    const tripId = "";
+
+         if ((window as any).AndroidBridge && (window as any).AndroidBridge.sendUserSessionToNative) {
+        // यह लाइन सीधे कोटलिन के फंक्शन को कॉल करेगी और डेटा एंड्रॉइड में चला जाएगा
+        (window as any).AndroidBridge.sendUserSessionToNative(userId, email, phone, tripId);
+        console.log("Session successfully passed to Native Android!");
+    } else {
+        console.log("Running in standard web browser, Native Bridge not found.");
+    }
+  this.router.navigate(['/home']);
+
         console.error('Login Failed', err);
         // alert('लॉगिन फेल हो गया! कृपया ईमेल और पासवर्ड चेक करें।');
       }
