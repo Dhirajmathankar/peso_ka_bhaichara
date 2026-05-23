@@ -11,6 +11,8 @@ import { YouWillGetComponent } from './you-will-get/you-will-get.component';
 import { YouWillGiveComponent } from './you-will-give/you-will-give.component';
 import { AddActionsDrawerComponent } from './add-actions-drawer/add-actions-drawer.component';
 import { DailyReportComponent } from './daily-report/daily-report.component';
+import { FormsModule } from '@angular/forms'
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import { DailyReportComponent } from './daily-report/daily-report.component';
   ],
   imports: [
     BrowserModule,
-    RouterModule.forRoot(routes, { useHash: true })
+    RouterModule.forRoot(routes, { useHash: true }),
+    FormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
