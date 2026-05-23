@@ -54,7 +54,7 @@ export class LoginComponent {
       error: (err) => {
          this.router.navigate(['/home']);
         console.error('Login Failed', err);
-        alert('लॉगिन फेल हो गया! कृपया ईमेल और पासवर्ड चेक करें।');
+        // alert('लॉगिन फेल हो गया! कृपया ईमेल और पासवर्ड चेक करें।');
       }
     });
   }

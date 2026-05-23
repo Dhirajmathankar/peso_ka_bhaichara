@@ -82,7 +82,7 @@
 
 
 
-
+<!-- 
 <body class="bg-gradient-to-br from-[#121212] via-[#1F1F1F] to-[#121212] flex items-center justify-center min-h-screen p-4 md:p-8 antialiased text-gray-100 relative">
     
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(13,148,136,0.05),_transparent_60%)]"></div>
@@ -163,8 +163,96 @@
         <div class="mt-8 pt-6 border-t border-teal-900/40 text-center relative z-10">
             <p class="text-sm text-gray-600 font-medium">
                 Already have an account? 
-                <a href="/auth/login" class="text-teal-600 font-extrabold hover:text-teal-500 transition-colors ml-1">Log In</a>
+                <a href="/#/login" class="text-teal-600 font-extrabold hover:text-teal-500 transition-colors ml-1">Log In</a>
             </p>
         </div>
     </div>
-</body>
+</body> -->
+
+
+
+<div class="fixed inset-0 bg-gradient-to-br from-[#121212] via-[#1F1F1F] to-[#121212] overflow-y-auto flex items-center justify-center p-4 md:p-8 antialiased text-gray-100 selection:bg-teal-500/30">
+    
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(13,148,136,0.05),_transparent_60%)] pointer-events-none"></div>
+
+    <div class="bg-[#1A1A1A]/90 backdrop-blur-lg p-8 md:p-10 rounded-[2.5rem] shadow-[inset_0px_-3px_8px_rgba(255,255,255,0.02),0px_30px_90px_rgba(0,0,0,0.6)] border border-teal-900/40 w-full max-w-lg my-auto transform transition-all duration-400 hover:shadow-[0_40px_100px_rgba(0,0,0,0.7)] relative overflow-hidden">
+        
+        <div class="absolute inset-0 rounded-[2.5rem] bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.01),_transparent_80%)] pointer-events-none"></div>
+
+        <div class="text-center mb-8 md:mb-10 relative z-10">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-[#141414] text-teal-600 rounded-2xl mb-4 shadow-[inset_1px_1px_3px_rgba(0,0,0,0.3),inset_-1px_-1px_2px_rgba(255,255,255,0.01)]">
+                <i class="fas fa-user-plus text-2xl opacity-90"></i>
+            </div>
+            <h2 class="text-3xl font-black tracking-tight text-gray-100">Create Account</h2>
+            <p class="text-gray-500 text-sm mt-2 font-medium">Join us to start booking your rides</p>
+        </div>
+
+        <form action="/signup" method="POST" class="space-y-5 md:space-y-6 relative z-10">
+            
+            <div class="space-y-4 md:space-y-5">
+                <div>
+                    <label class="block text-[11px] font-extrabold text-[#22C55E] uppercase tracking-wider mb-2">Full Name</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-600">
+                            <i class="far fa-user text-sm"></i>
+                        </span>
+                        <input type="text" name="fullname" required placeholder="Dhiraj Mathankar" 
+                            class="w-full pl-11 pr-4 py-3.5 rounded-2xl border-none shadow-[inset_1px_1px_3px_rgba(0,0,0,0.4),inset_-1px_-1px_2px_rgba(255,255,255,0.01)] bg-[#141414] focus:ring-4 focus:ring-teal-900/20 outline-none transition-all text-gray-200 font-medium placeholder-gray-600">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-extrabold text-[#22C55E] uppercase tracking-wider mb-2">Email Address</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-600">
+                            <i class="far fa-envelope text-sm"></i>
+                        </span>
+                        <input type="email" name="email" required placeholder="name@example.com" 
+                            class="w-full pl-11 pr-4 py-3.5 rounded-2xl border-none shadow-[inset_1px_1px_3px_rgba(0,0,0,0.4),inset_-1px_-1px_2px_rgba(255,255,255,0.01)] bg-[#141414] focus:ring-4 focus:ring-teal-900/20 outline-none transition-all text-gray-200 font-medium placeholder-gray-600">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-extrabold text-[#22C55E] uppercase tracking-wider mb-2">Phone Number</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-600">
+                            <i class="fas fa-phone-alt text-sm"></i>
+                        </span>
+                        <input type="tel" name="phone" required placeholder="98765 43210" 
+                            class="w-full pl-11 pr-4 py-3.5 rounded-2xl border-none shadow-[inset_1px_1px_3px_rgba(0,0,0,0.4),inset_-1px_-1px_2px_rgba(255,255,255,0.01)] bg-[#141414] focus:ring-4 focus:ring-teal-900/20 outline-none transition-all text-gray-200 font-medium placeholder-gray-600">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-extrabold text-[#22C55E] uppercase tracking-wider mb-2">Create Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-600">
+                            <i class="fas fa-lock text-sm"></i>
+                        </span>
+                        <input type="password" name="password" required placeholder="••••••••" 
+                            class="w-full pl-11 pr-4 py-3.5 rounded-2xl border-none shadow-[inset_1px_1px_3px_rgba(0,0,0,0.4),inset_-1px_-1px_2px_rgba(255,255,255,0.01)] bg-[#141414] focus:ring-4 focus:ring-teal-900/20 outline-none transition-all text-gray-200 font-medium placeholder-gray-600">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-start gap-3 px-1">
+                <input type="checkbox" id="terms" required class="mt-1 accent-teal-500 h-4 w-4 bg-[#141414] rounded border-none cursor-pointer">
+                <label for="terms" class="text-xs text-gray-500 leading-normal cursor-pointer select-none">
+                    I agree to the <a href="javascript:void(0)" class="text-teal-600 font-bold hover:text-teal-500 hover:underline transition-colors">Terms of Service</a> and 
+                    <a href="javascript:void(0)" class="text-teal-600 font-bold hover:text-teal-500 hover:underline transition-colors">Privacy Policy</a>.
+                </label>
+            </div>
+
+            <button type="submit" class="w-full bg-[#1D1D1D] text-teal-400 font-bold py-4 rounded-2xl shadow-[inset_0px_-3px_8px_rgba(255,255,255,0.01),0px_10px_25px_rgba(0,0,0,0.5)] border border-teal-900/40 hover:shadow-[0_15px_35px_rgba(0,0,0,0.6)] active:scale-[0.98] transform transition-all duration-200 flex items-center justify-center gap-2">
+                <span>Create Account</span> <i class="fas fa-arrow-right text-xs opacity-80"></i>
+            </button>
+        </form>
+
+        <div class="mt-8 pt-6 border-t border-teal-900/40 text-center relative z-10">
+            <p class="text-sm text-gray-600 font-medium">
+                Already have an account? 
+                <a href="/#/login" class="text-teal-600 font-extrabold hover:text-teal-500 transition-colors ml-1">Log In</a>
+            </p>
+        </div>
+    </div>
+</div>
