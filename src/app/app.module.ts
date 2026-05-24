@@ -13,6 +13,7 @@ import { AddActionsDrawerComponent } from './add-actions-drawer/add-actions-draw
 import { DailyReportComponent } from './daily-report/daily-report.component';
 import { FormsModule } from '@angular/forms'
 import { HttpClientModule } from '@angular/common/http';
+import { ToastComponent } from './toast/toast.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { HttpClientModule } from '@angular/common/http';
     YouWillGetComponent,
     YouWillGiveComponent,
     AddActionsDrawerComponent,
-    DailyReportComponent
+    DailyReportComponent,
+    ToastComponent
   ],
   imports: [
     BrowserModule,

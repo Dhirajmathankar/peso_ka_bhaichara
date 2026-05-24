@@ -1,0 +1,24 @@
+<div *ngIf="toastData.show" 
+     [ngClass]="toastData.type === 'success' ? 'border-emerald-500/30 bg-[#142A22]/95 text-emerald-400 shadow-[0_10px_30px_rgba(16,185,129,0.1)]' : 'border-red-500/30 bg-[#2A1414]/95 text-red-400 shadow-[0_10px_30px_rgba(239,68,68,0.1)]'"
+     class="fixed top-5 right-5 z-[99999] flex items-center gap-3 px-5 py-4 rounded-2xl border backdrop-blur-md transform transition-all duration-300 animate-slide-in min-w-[280px] max-w-sm">
+    
+    <div [ngClass]="toastData.type === 'success' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'" 
+         class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-inner">
+        <span class="material-icons text-lg">
+            {{ toastData.type === 'success' ? 'check_circle' : 'error' }}
+        </span>
+    </div>
+
+    <div class="flex-1">
+        <p class="text-xs font-bold tracking-wide uppercase opacity-60">
+            {{ toastData.type === 'success' ? 'Success' : 'Alert' }}
+        </p>
+        <p class="text-sm font-medium mt-0.5 text-gray-200">
+            {{ toastData.message }}
+        </p>
+    </div>
+
+    <button (click)="closeToast()" class="text-gray-500 hover:text-gray-300 transition-colors ml-2">
+        <span class="material-icons text-base">close</span>
+    </button>
+</div>

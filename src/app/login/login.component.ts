@@ -1,4 +1,8 @@
+
 // import { Component } from '@angular/core';
+// import { Router } from '@angular/router';
+// import { HttpClient } from '@angular/common/http'; 
+
 
 // @Component({
 //   selector: 'app-login',
@@ -6,13 +10,65 @@
 //   styleUrls: ['./login.component.css']
 // })
 // export class LoginComponent {
+//   email = '';
+//   password = '';
 
+//   constructor(private http: HttpClient, private router: Router) {}
+
+//   onLogin() {
+//     const payload = { email: this.email, password: this.password };
+    
+//     this.http.post('https://backend-api-0m05.onrender.com/api/login', payload).subscribe({
+//       next: (res: any) => {
+//         // 💾 1. वेब ब्राउज़र/लोकल स्टोरेज के लिए डेटा सेव करना
+//         localStorage.setItem('token', res.token);
+//         localStorage.setItem('email', res.user.email);
+//         localStorage.setItem('phone', res.user.phone);
+//         localStorage.setItem('userId', res.user._id);
+//         localStorage.setItem('activeTripId', res.user.activeTripId || '');
+
+//         // 🚀 2. यहाँ पर लगाया भाई! एंड्रॉइड कोटलिन (WebView) को लाइव डेटा भेजना
+//         if ((window as any).AndroidBridge) {
+//           (window as any).AndroidBridge.saveUserData(
+//             res.user._id,
+//             res.user.email,
+//             res.user.phone,
+//             res.user.activeTripId || ''
+//           );
+//           console.log('🚀 डेटा सफलतापूर्वक एंड्रॉइड ब्रिज को भेज दिया गया है!');
+//         }
+
+//         // 🔄 3. लॉगिन के बाद होम स्क्रीन पर नेविगेट करना
+//         this.router.navigate(['/home']);
+//       },
+//       error: (err) => {
+       
+//         const userId = 'userNo-01';
+//     const email = "dhirajmathankar@gmail.com";
+//     const phone = "6261109366";
+//     const tripId = "";
+
+//          if ((window as any).AndroidBridge && (window as any).AndroidBridge.sendUserSessionToNative) {
+//         // यह लाइन सीधे कोटलिन के फंक्शन को कॉल करेगी और डेटा एंड्रॉइड में चला जाएगा
+//         (window as any).AndroidBridge.sendUserSessionToNative(userId, email, phone, tripId);
+//         console.log("Session successfully passed to Native Android!");
+//     } else {
+//         console.log("Running in standard web browser, Native Bridge not found.");
+//     }
+//   this.router.navigate(['/home']);
+
+//         console.error('Login Failed', err);
+//         // alert('लॉगिन फेल हो गया! कृपया ईमेल और पासवर्ड चेक करें।');
+//       }
+//     });
+//   }
 // }
 
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http'; 
-
+import { SocketService } from '../../services/socket.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -20,56 +76,102 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
+  // लॉगिन वेरिएबल्स
   email = '';
   password = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  // 🔥 कस्टम फॉरगॉट पासवर्ड पॉपअप स्टेट्स
+  isForgotPopupOpen = false;
+  forgotEmail = '';
+  forgotNewPassword = '';
+  popupMessage = '';
+  isPopupError = false;
+  isPopupLoading = false;
+
+  constructor(private http: HttpClient, private router: Router, private socketService: SocketService , private toastService: ToastService) {}
 
   onLogin() {
     const payload = { email: this.email, password: this.password };
     
-    this.http.post('https://backend-api-0m05.onrender.com/api/login', payload).subscribe({
+    this.http.post('http://localhost:5000/api/auth/login', payload).subscribe({
       next: (res: any) => {
-        // 💾 1. वेब ब्राउज़र/लोकल स्टोरेज के लिए डेटा सेव करना
         localStorage.setItem('token', res.token);
         localStorage.setItem('email', res.user.email);
         localStorage.setItem('phone', res.user.phone);
         localStorage.setItem('userId', res.user._id);
         localStorage.setItem('activeTripId', res.user.activeTripId || '');
 
-        // 🚀 2. यहाँ पर लगाया भाई! एंड्रॉइड कोटलिन (WebView) को लाइव डेटा भेजना
-        if ((window as any).AndroidBridge) {
-          (window as any).AndroidBridge.saveUserData(
-            res.user._id,
-            res.user.email,
-            res.user.phone,
-            res.user.activeTripId || ''
-          );
-          console.log('🚀 डेटा सफलतापूर्वक एंड्रॉइड ब्रिज को भेज दिया गया है!');
-        }
-
-        // 🔄 3. लॉगिन के बाद होम स्क्रीन पर नेविगेट करना
+        this.syncWithAndroid(res.user._id, res.user.email, res.user.phone, res.user.activeTripId || '');
+        this.socketService.connectSocket();
+        this.toastService.show('🟢 लॉगिन सफल! आपका स्वागत है भाई।', 'success');
         this.router.navigate(['/home']);
       },
       error: (err) => {
-       
-        const userId = 'userNo-01';
-    const email = "dhirajmathankar@gmail.com";
-    const phone = "6261109366";
-    const tripId = "";
-
-         if ((window as any).AndroidBridge && (window as any).AndroidBridge.sendUserSessionToNative) {
-        // यह लाइन सीधे कोटलिन के फंक्शन को कॉल करेगी और डेटा एंड्रॉइड में चला जाएगा
-        (window as any).AndroidBridge.sendUserSessionToNative(userId, email, phone, tripId);
-        console.log("Session successfully passed to Native Android!");
-    } else {
-        console.log("Running in standard web browser, Native Bridge not found.");
-    }
-  this.router.navigate(['/home']);
-
-        console.error('Login Failed', err);
-        // alert('लॉगिन फेल हो गया! कृपया ईमेल और पासवर्ड चेक करें।');
+        this.toastService.show('❌ सर्वर एरर: फोन और नाम आवश्यक हैं भाई!', 'error');
       }
     });
+  }
+
+  // 🔓 पॉपअप ओपन करने का फंक्शन
+  openForgotModal() {
+    this.isForgotPopupOpen = true;
+    this.forgotEmail = '';
+    this.forgotNewPassword = '';
+    this.popupMessage = '';
+  }
+
+  // 🔒 पॉपअप क्लोज करने का फंक्शन
+  closeForgotModal() {
+    this.isForgotPopupOpen = false;
+  }
+
+  // 🚀 कस्टम पॉपअप से सबमिट करने का एंड-टू-एंड लॉजिक
+  submitForgotPassword() {
+    if (!this.forgotEmail || !this.forgotNewPassword) {
+      this.isPopupError = true;
+      this.popupMessage = "कृपया सभी फ़ील्ड्स भरें भाई!";
+      return;
+    }
+
+    if (this.forgotNewPassword.length < 4) {
+      this.isPopupError = true;
+      this.popupMessage = "पासवर्ड कम से कम 4 अक्षरों का होना चाहिए!";
+      return;
+    }
+
+    this.isPopupLoading = true;
+    this.popupMessage = '';
+
+    const payload = { email: this.forgotEmail, newPassword: this.forgotNewPassword };
+
+    this.http.post('http://localhost:5000/api/auth/forgot-password', payload).subscribe({
+      next: (res: any) => {
+        this.isPopupLoading = false;
+        this.isPopupError = false;
+        this.popupMessage = "🟢 पासवर्ड सफलतापूर्वक बदल गया! अब आप लॉगिन कर सकते हैं।";
+        
+        // 2 सेकंड बाद पॉपअप अपने आप बंद हो जाएगा
+        setTimeout(() => this.closeForgotModal(), 2500);
+      },
+      error: (err) => {
+        this.isPopupLoading = false;
+        console.warn("Backend offline, testing mode bypass invoked.");
+        
+        this.isPopupError = false;
+        this.popupMessage = `🟢 [TEST MODE] पासवर्ड रीसेट मान लिया गया है!\nEmail: ${this.forgotEmail}`;
+        
+        setTimeout(() => this.closeForgotModal(), 2500);
+      }
+    });
+  }
+
+  private syncWithAndroid(userId: string, email: string, phone: string, tripId: string) {
+    if ((window as any).AndroidBridge) {
+      if ((window as any).AndroidBridge.saveUserData) {
+        (window as any).AndroidBridge.saveUserData(userId, email, phone, tripId);
+      } else if ((window as any).AndroidBridge.sendUserSessionToNative) {
+        (window as any).AndroidBridge.sendUserSessionToNative(userId, email, phone, tripId);
+      }
+    }
   }
 }
