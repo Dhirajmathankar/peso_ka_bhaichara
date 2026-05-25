@@ -255,7 +255,7 @@ export class LoginComponent {
     sessionStorage.setItem('token', token);
     sessionStorage.setItem('email', user.email);
     sessionStorage.setItem('phone', user.phone);
-    sessionStorage.setItem('userId', user.id);
+    sessionStorage.setItem('userId', user._id);
     sessionStorage.setItem('activeTripId', user.activeTripId || '');
 
     this.syncWithAndroid(token , user.id, user.email, user.phone, user.activeTripId || '');

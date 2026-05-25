@@ -148,14 +148,13 @@
 </div> -->
 
 
-
 <div class="min-h-screen bg-[#0A120E] text-gray-100 pb-24 relative font-sans selection:bg-emerald-500/30">
   
   <div *ngIf="currentTab === 'home'" class="p-4 space-y-6 max-w-lg mx-auto">
     <div class="flex justify-between items-center pt-4">
       <div>
         <h1 class="text-2xl font-black tracking-tight">Account Home</h1>
-        <p class="text-xs text-emerald-500/80 font-mono mt-0.5">Active Trip: {{ activeTripId }}</p>
+        <p class="text-xs text-emerald-500/80 font-mono mt-0.5">Active Account: {{ activeTripName }}</p>
       </div>
       <div class="relative">
         <button class="w-10 h-10 rounded-xl bg-[#12221A] flex items-center justify-center border border-emerald-900/40 text-emerald-400">
@@ -165,28 +164,46 @@
     </div>
 
     <div class="grid grid-cols-2 gap-4">
-      <div class="bg-[#101F17] p-4 rounded-2xl border border-emerald-900/30 shadow-lg">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Balance</p>
-        <p class="text-xl font-black text-emerald-400 mt-1">₹{{ totalBalance | number:'1.2-2' }}</p>
+      <div class="bg-[#101F17] p-4 rounded-2xl border border-emerald-900/30 shadow-lg col-span-2">
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Net Balance</p>
+        <p class="text-3xl font-black text-emerald-400 mt-1">₹{{ totalBalance | number:'1.2-2' }}</p>
       </div>
       <div class="bg-[#101F17] p-4 rounded-2xl border border-emerald-900/30 shadow-lg cursor-pointer" (click)="openQuickAction('entry')">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">You Will Give</p>
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Debits (You Give)</p>
         <p class="text-xl font-black text-red-400 mt-1">₹{{ youWillGive | number:'1.2-2' }}</p>
       </div>
       <div class="bg-[#101F17] p-4 rounded-2xl border border-emerald-900/30 shadow-lg">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">You Will Get</p>
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Credits (You Get)</p>
         <p class="text-xl font-black text-blue-400 mt-1">₹{{ youWillGet | number:'1.2-2' }}</p>
       </div>
-      <div class="bg-[#101F17] p-4 rounded-2xl border border-emerald-900/30 shadow-lg cursor-pointer" (click)="openQuickAction('trip')">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Monthly Budget</p>
-        <p class="text-xl font-black text-cyan-400 mt-1">₹{{ monthlyBudget | number:'1.2-2' }}</p>
+    </div>
+
+    <div>
+      <h2 class="text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
+        <span class="material-icons text-sm text-emerald-400">account_balance</span> Bank Accounts Breakdown
+      </h2>
+      <div class="grid grid-cols-2 gap-3">
+        <div *ngFor="let bank of banksBreakdown" class="bg-[#12251B] p-4 rounded-2xl border border-emerald-800/20 relative overflow-hidden shadow-md">
+          <div class="flex justify-between items-start">
+            <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono text-[10px] font-black uppercase tracking-wide">{{ bank.bankName }}</span>
+            <span class="material-icons text-gray-600 text-sm">credit_card</span>
+          </div>
+          <p class="text-lg font-black text-gray-100 mt-3">₹{{ bank.balance | number:'1.2-2' }}</p>
+          <div class="flex justify-between items-center text-[9px] text-gray-400 font-mono mt-2 pt-2 border-t border-emerald-900/40">
+            <span class="text-blue-400">In: {{ bank.totalIn }}</span>
+            <span class="text-red-400">Out: {{ bank.totalOut }}</span>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="banksBreakdown.length === 0" class="text-center py-4 text-xs text-gray-500 bg-[#101F17] rounded-2xl border border-dashed border-emerald-900/30">
+        कोई लिंक किया हुआ बैंक अकाउंट नहीं मिला।
       </div>
     </div>
 
     <div class="bg-[#101F17] p-5 rounded-3xl border border-emerald-900/20 space-y-3">
       <div class="flex justify-between items-center text-xs font-bold">
         <span class="text-emerald-400">Spent: ₹{{ totalSpent }} ({{ spentPercentage | number:'1.0-0' }}%)</span>
-        <span class="text-gray-500">Target: ₹{{ monthlyBudget }}</span>
+        <span class="text-gray-500">Target Budget: ₹{{ monthlyBudget }}</span>
       </div>
       <div class="w-full h-2.5 bg-[#08130E] rounded-full overflow-hidden p-[2px] shadow-inner">
         <div class="h-full bg-gradient-to-r from-emerald-500 via-yellow-500 to-red-500 rounded-full transition-all duration-500"
@@ -218,19 +235,19 @@
 
     <div class="space-y-3">
       <div class="flex justify-between items-center">
-        <h2 class="text-sm font-extrabold text-gray-400 uppercase tracking-wider">Recent Transactions</h2>
+        <h2 class="text-sm font-extrabold text-gray-400 uppercase tracking-wider">Today's Live Activities</h2>
         <button class="text-xs font-bold text-emerald-400">View All</button>
       </div>
 
       <div class="space-y-2.5">
-        <div *ngFor="let tx of recentTransactions" class="bg-[#101F17] p-3.5 rounded-2xl border border-emerald-900/20 flex justify-between items-center">
+        <div *ngFor="let tx of recentTransactions" class="bg-[#101F17] p-3.5 rounded-2xl border border-emerald-900/20 flex justify-between items-center animate-fade-in">
           <div class="flex items-center gap-3">
-            <div [ngClass]="tx.type === 'credit' ? 'bg-blue-500/10 text-blue-400' : 'bg-red-500/10 text-red-400'" class="w-10 h-10 rounded-xl flex items-center justify-center font-mono font-bold text-sm shadow-inner">
-              {{ tx.type === 'credit' ? 'IN' : 'OUT' }}
+            <div [ngClass]="tx.type === 'credit' ? 'bg-blue-500/10 text-blue-400' : 'bg-red-500/10 text-red-400'" class="w-10 h-10 rounded-xl flex items-center justify-center font-mono font-bold text-[11px] shadow-inner">
+              {{ tx.bankName }}
             </div>
             <div>
-              <p class="text-sm font-bold text-gray-100 capitalize">{{ tx.merchant }}</p>
-              <p class="text-[10px] text-gray-500 mt-0.5 font-mono">{{ tx.timestamp | date:'shortTime' }} • {{ tx.isTagged }}</p>
+              <p class="text-sm font-bold text-gray-100 capitalize">{{ tx.message }}</p>
+              <p class="text-[10px] text-gray-500 mt-0.5 font-mono">{{ tx.time | date:'shortTime' }} • LIVE SYNCED</p>
             </div>
           </div>
           <p [ngClass]="tx.type === 'credit' ? 'text-blue-400' : 'text-red-400'" class="font-mono font-black text-base">
@@ -239,7 +256,7 @@
         </div>
 
         <div *ngIf="recentTransactions.length === 0" class="text-center py-8 text-xs text-gray-500">
-          आज अभी तक कोई ट्रांजैक्शन रिकॉर्ड नहीं हुआ है।
+          आज अभी तक कोई लाइव ट्रांजैक्शन रिकॉर्ड नहीं हुआ है।
         </div>
       </div>
     </div>
@@ -248,7 +265,7 @@
   <div *ngIf="currentTab !== 'home'" class="p-8 text-center text-gray-400 max-w-md mx-auto pt-20">
     <span class="material-icons text-5xl text-emerald-500/40 mb-3">construction</span>
     <h3 class="text-lg font-bold text-gray-200 capitalize">{{ currentTab }} Section</h3>
-    <p class="text-xs text-gray-500 mt-1">यह स्क्रीन मॉड्यूल आर्किटेक्चर के तहत कस्टमाइज़ हो रही है।</p>
+    <p class="text-xs text-gray-500 mt-1">यह स्क्रीन मॉड्यूल आर्किटेक्चर के तहत कस्टमाइज़ हो रही है.</p>
   </div>
 
   <nav class="fixed bottom-0 left-0 right-0 bg-[#0A120E]/90 backdrop-blur-md border-t border-emerald-900/30 py-2.5 px-6 flex justify-between items-center max-w-lg mx-auto z-40">
@@ -283,6 +300,16 @@
         <input type="number" [(ngModel)]="entryAmount" placeholder="राशि दर्ज करें (₹)" class="w-full bg-[#08130E] border-none rounded-xl p-4 text-center font-mono font-bold text-2xl text-emerald-400 outline-none focus:ring-2 focus:ring-emerald-500/20">
         <input type="text" [(ngModel)]="entryMerchant" placeholder="मर्चेंट या विवरण" class="w-full bg-[#08130E] border-none rounded-xl p-3.5 text-sm outline-none text-gray-200">
         
+        <div class="space-y-1.5">
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Select Account/Bank</label>
+          <select [(ngModel)]="entryBank" class="w-full bg-[#08130E] border border-emerald-900/40 rounded-xl p-3 text-sm text-gray-200 outline-none font-bold">
+            <option value="SBI">SBI BANK</option>
+            <option value="HDFC">HDFC BANK</option>
+            <option value="PAYTM">PAYTM WALLET</option>
+            <option value="CASH">CASH IN HAND</option>
+          </select>
+        </div>
+
         <div class="grid grid-cols-2 gap-3">
           <button (click)="entryType = 'debit'" [ngClass]="entryType === 'debit' ? 'bg-red-500/20 text-red-400 border-red-500/40' : 'bg-[#08130E] text-gray-500'" class="py-3 rounded-xl border text-xs font-bold transition-all">DEBIT (खर्च)</button>
           <button (click)="entryType = 'credit'" [ngClass]="entryType === 'credit' ? 'bg-blue-500/20 text-blue-400 border-blue-500/40' : 'bg-[#08130E] text-gray-500'" class="py-3 rounded-xl border text-xs font-bold transition-all">CREDIT (आय)</button>
@@ -296,7 +323,7 @@
         <input type="text" [(ngModel)]="tripDestination" placeholder="गंतव्य स्थल" class="w-full bg-[#08130E] border-none rounded-xl p-3.5 text-sm outline-none text-gray-200">
         <input type="number" [(ngModel)]="tripBudget" placeholder="ट्रिप बजट लिमिट (₹)" class="w-full bg-[#08130E] border-none rounded-xl p-3.5 text-sm outline-none text-gray-200 font-mono">
         
-        <button (click)="submitTrip()" class="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl text-sm active:scale-95 transition-transform mt-2">नया ट्रip शुरू करें</button>
+        <button (click)="submitTrip()" class="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl text-sm active:scale-95 transition-transform mt-2">नया ट्रिप शुरू करें</button>
       </div>
 
       <div *ngIf="selectedActionTab === 'voice' || selectedActionTab === 'mitra'" class="py-6 text-center text-xs text-gray-500">

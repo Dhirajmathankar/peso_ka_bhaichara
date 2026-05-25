@@ -132,6 +132,8 @@
 //     if (this.socketSub) this.socketSub.unsubscribe();
 //   }
 // }
+
+
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DashboardService } from '../services/dashboard.service';
 import { SocketService } from '../../services/socket.service';
@@ -149,20 +151,25 @@ export class HomeComponent implements OnInit, OnDestroy {
   tabName: string = ''; 
   selectedActionTab: string = 'entry';
 
-  // लाइव कार्ड वेरिएबल्स
+  // लाइव कार्ड वेरिएबल्स (ग्लोबल)
   totalBalance: number = 0;
   youWillGive: number = 0;
   youWillGet: number = 0;
   monthlyBudget: number = 20000;
   spentPercentage: number = 0;
   totalSpent: number = 0;
-  activeTripId: string = 'trip_goa_2026';
+  activeTripName: string = 'No Active Trip';
+  activeTripId: string = '';
+  
+  // 🔥 प्रोडक्शन रेडी बैंक ब्रेकडाउन और ट्रांजैक्शन्स एरे
+  banksBreakdown: any[] = [];
   recentTransactions: any[] = [];
 
   // फॉर्म इनपुट्स
   entryAmount: number | null = null;
   entryMerchant: string = '';
   entryType: string = 'debit';
+  entryBank: string = 'SBI'; // डिफ़ॉल्ट सिलेक्टेड बैंक
 
   tripName: string = '';
   tripDestination: string = '';
@@ -184,13 +191,30 @@ export class HomeComponent implements OnInit, OnDestroy {
   loadDashboard() {
     this.dashboardService.getSummary().subscribe({
       next: (res: any) => {
-        this.totalBalance = res.totalBalance;
-        this.youWillGive = res.youWillGive;
-        this.youWillGet = res.youWillGet;
-        this.monthlyBudget = res.monthlyBudget;
-        this.activeTripId = res.activeTripId;
-        this.recentTransactions = res.recentTransactions;
-        this.recalculateProgress();
+        if (res.status === 'success' && res.data) {
+          const wallet = res.data.walletSummary;
+          const trip = res.data.activeTrip;
+
+          // 1. वॉलेट समरी डेटा मैपिंग
+          this.totalBalance = wallet.totalBalance;
+          this.youWillGive = wallet.youWillGive;
+          this.youWillGet = wallet.youWillGet;
+          this.banksBreakdown = wallet.banksBreakdown || [];
+
+          // 2. एक्टिव ट्रिप मैपिंग
+          if (trip) {
+            this.activeTripId = trip.id;
+            this.activeTripName = trip.tripName;
+            this.monthlyBudget = trip.budget || 20000; // ट्रिप का बजट ही मंथली बजट का काम करेगा
+          } else {
+            this.activeTripName = 'Personal Account';
+            this.monthlyBudget = 20000;
+          }
+
+          // 3. ट्रांजैक्शन मैपिंग
+          this.recentTransactions = res.data.todayTransactions || [];
+          this.recalculateProgress();
+        }
       },
       error: () => this.toastService.show('❌ डैशबोर्ड डेटा लोड करने में समस्या आई', 'error')
     });
@@ -198,19 +222,54 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   initLiveSocket() {
     this.socketService.connectSocket();
-    // सर्वर से आने वाले 'live-transaction' इवेंट को सुनें
+    
     this.socketSub = this.socketService.notification$.subscribe((newTx: any) => {
-      this.recentTransactions.unshift(newTx);
+      // नए ट्रांजैक्शन को सबसे ऊपर जोड़ें
+      const mappedTx = {
+        id: newTx._id || newTx.id,
+        bankName: (newTx.bankName || 'CASH').toUpperCase(),
+        type: newTx.type,
+        amount: Number(newTx.amount),
+        message: newTx.message || 'Live Transaction',
+        time: newTx.createdAt || new Date()
+      };
       
-      if (newTx.type === 'credit') {
-        this.totalBalance += Number(newTx.amount);
-        this.youWillGet += Number(newTx.amount);
+      this.recentTransactions.unshift(mappedTx);
+      
+      // 🔄 रियल-टाइम लाइव बैंक वाइज बैलेंस कैलकुलेशन कैलकुलेटर
+      const amount = Number(mappedTx.amount);
+      const isCredit = mappedTx.type === 'credit';
+
+      if (isCredit) {
+        this.totalBalance += amount;
+        this.youWillGet += amount;
       } else {
-        this.totalBalance -= Number(newTx.amount);
-        this.youWillGive += Number(newTx.amount);
+        this.totalBalance -= amount;
+        this.youWillGive += amount;
       }
+
+      // स्पेसिफिक बैंक का लाइव बैलेंस अपडेट करें
+      const targetBank = this.banksBreakdown.find(b => b.bankName === mappedTx.bankName);
+      if (targetBank) {
+        if (isCredit) {
+          targetBank.balance += amount;
+          targetBank.totalIn += amount;
+        } else {
+          targetBank.balance -= amount;
+          targetBank.totalOut += amount;
+        }
+      } else {
+        // अगर नया बैंक है तो एरे में पुश कर दें
+        this.banksBreakdown.push({
+          bankName: mappedTx.bankName,
+          balance: isCredit ? amount : -amount,
+          totalIn: isCredit ? amount : 0,
+          totalOut: isCredit ? 0 : amount
+        });
+      }
+
       this.recalculateProgress();
-      this.toastService.show(`🟢 नया ट्रांजैक्शन सिंक हुआ: ₹${newTx.amount}`, 'success');
+      this.toastService.show(`🟢 ${mappedTx.bankName} में नया ट्रांजैक्शन: ₹${amount}`, 'success');
     });
   }
 
@@ -219,7 +278,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.toastService.show('⚠️ कृपया राशि और मर्चेंट का नाम भरें', 'error');
       return;
     }
-    const payload = { amount: this.entryAmount, merchant: this.entryMerchant, type: this.entryType, activeTripId: this.activeTripId };
+    const payload = { 
+      amount: this.entryAmount, 
+      merchant: this.entryMerchant, 
+      type: this.entryType, 
+      bankName: this.entryBank, // 🔥 बैंक नाम भी साथ भेजें
+      activeTripId: this.activeTripId 
+    };
     
     this.dashboardService.addManualEntry(payload).subscribe({
       next: () => {
@@ -249,7 +314,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   recalculateProgress() {
     this.totalSpent = this.youWillGive;
-    this.spentPercentage = (this.totalSpent / this.monthlyBudget) * 100;
+    this.spentPercentage = this.monthlyBudget > 0 ? (this.totalSpent / this.monthlyBudget) * 100 : 0;
     if (this.spentPercentage > 100) this.spentPercentage = 100;
   }
 
@@ -257,7 +322,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   switchFooterTab(tab: string) { this.currentTab = tab; }
   openQuickAction(actionType: 'entry' | 'voice' | 'mitra' | 'trip') { this.selectedActionTab = actionType; this.tabName = 'quick-action'; }
   closeDrawer() { this.tabName = ''; }
-  resetEntryForm() { this.entryAmount = null; this.entryMerchant = ''; }
+  resetEntryForm() { this.entryAmount = null; this.entryMerchant = ''; this.entryBank = 'SBI'; }
 
   ngOnDestroy() {
     if (this.socketSub) this.socketSub.unsubscribe();
