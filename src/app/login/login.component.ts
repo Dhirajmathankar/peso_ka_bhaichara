@@ -212,7 +212,7 @@ export class LoginComponent {
     
     this.authService.login(payload).subscribe({
       next: (res: any) => {
-        this.saveSession(res.accessToken, res.user);
+        this.saveSession(res.token, res.user);
         this.toastService.show('🟢 लॉगिन सफल! आपका स्वागत है।', 'success');
         this.router.navigate(['/home']);
       },
@@ -258,14 +258,14 @@ export class LoginComponent {
     sessionStorage.setItem('userId', user.id);
     sessionStorage.setItem('activeTripId', user.activeTripId || '');
 
-    this.syncWithAndroid(user._id, user.email, user.phone, user.activeTripId || '');
+    this.syncWithAndroid(token , user.id, user.email, user.phone, user.activeTripId || '');
     this.socketService.connectSocket();
   }
 
   openForgotModal() { this.isForgotPopupOpen = true; this.forgotEmail = ''; this.forgotNewPassword = ''; this.popupMessage = ''; }
   closeForgotModal() { this.isForgotPopupOpen = false; }
 
-  private syncWithAndroid(userId: string, email: string, phone: string, tripId: string) {
+  private syncWithAndroid(token:any, userId: string, email: string, phone: string, tripId: string) {
     if ((window as any).AndroidBridge) {
       if ((window as any).AndroidBridge.saveUserData) (window as any).AndroidBridge.saveUserData(userId, email, phone, tripId);
       else if ((window as any).AndroidBridge.sendUserSessionToNative) (window as any).AndroidBridge.sendUserSessionToNative(userId, email, phone, tripId);
