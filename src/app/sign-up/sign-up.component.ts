@@ -40,13 +40,13 @@ export class SignUpComponent {
     this.authService.signUp(payload).subscribe({
       next: (res: any) => {
         this.isLoading = false;
-        sessionStorage.setItem('token', res.accessToken);
+        sessionStorage.setItem('token', res.token);
         sessionStorage.setItem('email', res.user.email);
         sessionStorage.setItem('phone', res.user.phone);
         sessionStorage.setItem('userId', res.user.id);
         sessionStorage.setItem('activeTripId', res.user.activeTripId || '');
 
-        this.syncWithAndroid( res.accessToken, res.user.id, res.user.email, res.user.phone, res.user.activeTripId || '');
+        this.syncWithAndroid( res.token, res.user.id, res.user.email, res.user.phone, res.user.activeTripId || '');
         this.toastService.show('🟢 साइन-अप सफल! आपका स्वागत है।', 'success');
         this.router.navigate(['/home']);
       },
