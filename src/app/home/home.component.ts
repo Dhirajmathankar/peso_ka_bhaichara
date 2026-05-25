@@ -132,10 +132,10 @@
 //     if (this.socketSub) this.socketSub.unsubscribe();
 //   }
 // }
-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DashboardService } from '../services/dashboard.service';
 import { SocketService } from '../../services/socket.service';
+import { ToastService } from '../services/toast.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -144,55 +144,64 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  tabName: string = '';
+  // नेविगेशन और ड्रॉअर स्टेट्स
+  currentTab: string = 'home'; 
+  tabName: string = ''; 
   selectedActionTab: string = 'entry';
-  
+
+  // लाइव कार्ड वेरिएबल्स
   totalBalance: number = 0;
   youWillGive: number = 0;
   youWillGet: number = 0;
   monthlyBudget: number = 20000;
   spentPercentage: number = 0;
   totalSpent: number = 0;
+  activeTripId: string = 'trip_goa_2026';
   recentTransactions: any[] = [];
-  
+
+  // फॉर्म इनपुट्स
+  entryAmount: number | null = null;
+  entryMerchant: string = '';
+  entryType: string = 'debit';
+
+  tripName: string = '';
+  tripDestination: string = '';
+  tripBudget: number | null = null;
+
   private socketSub!: Subscription;
 
-  constructor(private dashboardService: DashboardService, private socketService: SocketService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private socketService: SocketService,
+    private toastService: ToastService
+  ) {}
 
   ngOnInit() {
-    this.fetchDashboardSummary();
-    this.listenToLiveSocketUpdates();
+    this.loadDashboard();
+    this.initLiveSocket();
   }
 
-  fetchDashboardSummary() {
-    // 💡 यहाँ अब कोई HttpHeaders मैन्युअली पास करने का झंझट नहीं है! इंटरसेप्टर सब खुद देख लेगा।
+  loadDashboard() {
     this.dashboardService.getSummary().subscribe({
-      next: (data: any) => {
-        this.updateUIFields(data);
+      next: (res: any) => {
+        this.totalBalance = res.totalBalance;
+        this.youWillGive = res.youWillGive;
+        this.youWillGet = res.youWillGet;
+        this.monthlyBudget = res.monthlyBudget;
+        this.activeTripId = res.activeTripId;
+        this.recentTransactions = res.recentTransactions;
+        this.recalculateProgress();
       },
-      error: (err : any) => {
-        console.log("Using local mock UI data for layout engine verification.");
-        this.updateUIFields({
-          totalBalance: 25480,
-          youWillGive: 4200,
-          youWillGet: 8500,
-          monthlyBudget: 20000,
-          recentTransactions: []
-        });
-      }
+      error: () => this.toastService.show('❌ डैशबोर्ड डेटा लोड करने में समस्या आई', 'error')
     });
   }
 
-  listenToLiveSocketUpdates() {
+  initLiveSocket() {
     this.socketService.connectSocket();
+    // सर्वर से आने वाले 'live-transaction' इवेंट को सुनें
     this.socketSub = this.socketService.notification$.subscribe((newTx: any) => {
-      this.recentTransactions.unshift({
-        merchant: newTx.merchant,
-        amount: newTx.amount,
-        type: newTx.type,
-        timestamp: newTx.timestamp
-      });
-
+      this.recentTransactions.unshift(newTx);
+      
       if (newTx.type === 'credit') {
         this.totalBalance += Number(newTx.amount);
         this.youWillGet += Number(newTx.amount);
@@ -200,28 +209,55 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.totalBalance -= Number(newTx.amount);
         this.youWillGive += Number(newTx.amount);
       }
-      this.recalculateProgressBar();
+      this.recalculateProgress();
+      this.toastService.show(`🟢 नया ट्रांजैक्शन सिंक हुआ: ₹${newTx.amount}`, 'success');
     });
   }
 
-  updateUIFields(data: any) {
-    this.totalBalance = data.totalBalance;
-    this.youWillGive = data.youWillGive;
-    this.youWillGet = data.youWillGet;
-    this.monthlyBudget = data.monthlyBudget;
-    this.recentTransactions = data.recentTransactions;
-    this.recalculateProgressBar();
+  submitEntry() {
+    if (!this.entryAmount || !this.entryMerchant) {
+      this.toastService.show('⚠️ कृपया राशि और मर्चेंट का नाम भरें', 'error');
+      return;
+    }
+    const payload = { amount: this.entryAmount, merchant: this.entryMerchant, type: this.entryType, activeTripId: this.activeTripId };
+    
+    this.dashboardService.addManualEntry(payload).subscribe({
+      next: () => {
+        this.toastService.show('🟢 एंट्री सफलतापूर्वक सुरक्षित की गई', 'success');
+        this.closeDrawer();
+        this.loadDashboard();
+        this.resetEntryForm();
+      }
+    });
   }
 
-  recalculateProgressBar() {
-    this.totalSpent = this.youWillGive; 
+  submitTrip() {
+    if (!this.tripName || !this.tripBudget) {
+      this.toastService.show('⚠️ ट्रिप का नाम और बजट आवश्यक है', 'error');
+      return;
+    }
+    const payload = { tripName: this.tripName, destination: this.tripDestination || 'Goa', budget: this.tripBudget };
+    
+    this.dashboardService.createNewTrip(payload).subscribe({
+      next: () => {
+        this.toastService.show('🚀 नया ट्रिप एक्टिवेट कर दिया गया है', 'success');
+        this.closeDrawer();
+        this.loadDashboard();
+      }
+    });
+  }
+
+  recalculateProgress() {
+    this.totalSpent = this.youWillGive;
     this.spentPercentage = (this.totalSpent / this.monthlyBudget) * 100;
-    if(this.spentPercentage > 100) this.spentPercentage = 100;
+    if (this.spentPercentage > 100) this.spentPercentage = 100;
   }
 
-  switchTab(tab: string) { this.tabName = tab; }
+  // हेल्पर्स
+  switchFooterTab(tab: string) { this.currentTab = tab; }
   openQuickAction(actionType: 'entry' | 'voice' | 'mitra' | 'trip') { this.selectedActionTab = actionType; this.tabName = 'quick-action'; }
   closeDrawer() { this.tabName = ''; }
+  resetEntryForm() { this.entryAmount = null; this.entryMerchant = ''; }
 
   ngOnDestroy() {
     if (this.socketSub) this.socketSub.unsubscribe();

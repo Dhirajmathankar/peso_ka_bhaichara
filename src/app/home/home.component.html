@@ -149,137 +149,161 @@
 
 
 
-
-<div class="min-h-screen bg-[#061a14] text-white p-4 font-sans pb-24 select-none">
+<div class="min-h-screen bg-[#0A120E] text-gray-100 pb-24 relative font-sans selection:bg-emerald-500/30">
   
-  <header class="flex justify-between items-center mb-6 mt-4" style="padding-top: 20px;">
+  <div *ngIf="currentTab === 'home'" class="p-4 space-y-6 max-w-lg mx-auto">
+    <div class="flex justify-between items-center pt-4">
+      <div>
+        <h1 class="text-2xl font-black tracking-tight">Account Home</h1>
+        <p class="text-xs text-emerald-500/80 font-mono mt-0.5">Active Trip: {{ activeTripId }}</p>
+      </div>
+      <div class="relative">
+        <button class="w-10 h-10 rounded-xl bg-[#12221A] flex items-center justify-center border border-emerald-900/40 text-emerald-400">
+          <span class="material-icons text-xl">notifications</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="bg-[#101F17] p-4 rounded-2xl border border-emerald-900/30 shadow-lg">
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total Balance</p>
+        <p class="text-xl font-black text-emerald-400 mt-1">₹{{ totalBalance | number:'1.2-2' }}</p>
+      </div>
+      <div class="bg-[#101F17] p-4 rounded-2xl border border-emerald-900/30 shadow-lg cursor-pointer" (click)="openQuickAction('entry')">
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">You Will Give</p>
+        <p class="text-xl font-black text-red-400 mt-1">₹{{ youWillGive | number:'1.2-2' }}</p>
+      </div>
+      <div class="bg-[#101F17] p-4 rounded-2xl border border-emerald-900/30 shadow-lg">
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">You Will Get</p>
+        <p class="text-xl font-black text-blue-400 mt-1">₹{{ youWillGet | number:'1.2-2' }}</p>
+      </div>
+      <div class="bg-[#101F17] p-4 rounded-2xl border border-emerald-900/30 shadow-lg cursor-pointer" (click)="openQuickAction('trip')">
+        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Monthly Budget</p>
+        <p class="text-xl font-black text-cyan-400 mt-1">₹{{ monthlyBudget | number:'1.2-2' }}</p>
+      </div>
+    </div>
+
+    <div class="bg-[#101F17] p-5 rounded-3xl border border-emerald-900/20 space-y-3">
+      <div class="flex justify-between items-center text-xs font-bold">
+        <span class="text-emerald-400">Spent: ₹{{ totalSpent }} ({{ spentPercentage | number:'1.0-0' }}%)</span>
+        <span class="text-gray-500">Target: ₹{{ monthlyBudget }}</span>
+      </div>
+      <div class="w-full h-2.5 bg-[#08130E] rounded-full overflow-hidden p-[2px] shadow-inner">
+        <div class="h-full bg-gradient-to-r from-emerald-500 via-yellow-500 to-red-500 rounded-full transition-all duration-500"
+             [style.width.%]="spentPercentage"></div>
+      </div>
+    </div>
+
     <div>
-      <h1 class="text-2xl font-bold tracking-tight">Account Home</h1>
-    </div>
-    <div class="flex gap-4">
-      <button class="p-2 bg-[#0a2a20] rounded-full shadow-lg border border-green-900/30 active:scale-90 transition-all">
-        <span class="material-icons text-green-400 text-xl">notifications</span>
-      </button>
-      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-green-500 to-emerald-800 border-2 border-green-400/50 shadow-md"></div>
-    </div>
-  </header>
-
-  <section class="grid grid-cols-2 gap-4 mb-6">
-    <div class="bg-[#0a2a20] p-4 rounded-2xl border border-green-900/40 shadow-xl">
-      <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Total Balance</p>
-      <h2 class="text-xl font-bold text-emerald-400">₹{{ totalBalance | number:'1.2-2' }}</h2>
-    </div>
-    <div class="bg-[#0a2a20] p-4 rounded-2xl border border-green-900/40 shadow-xl cursor-pointer active:bg-[#0d382b] transition-colors" (click)="switchTab('you-will-give')">
-      <p class="text-xs text-gray-400 uppercase font-semibold mb-1">You Will Give</p>
-      <div class="flex justify-between items-center">
-        <h2 class="text-xl font-bold text-red-400">₹{{ youWillGive | number:'1.2-2' }}</h2>
-        <span class="text-red-400">→</span>
+      <h2 class="text-sm font-extrabold text-gray-400 uppercase tracking-wider mb-3">Quick Actions</h2>
+      <div class="grid grid-cols-4 gap-3 text-center">
+        <button (click)="openQuickAction('entry')" class="bg-[#101F17] py-4 rounded-2xl border border-emerald-900/30 flex flex-col items-center gap-1.5 active:scale-95 transition-transform">
+          <span class="material-icons text-emerald-400">add_card</span>
+          <span class="text-[10px] font-bold text-gray-300">Add Entry</span>
+        </button>
+        <button (click)="openQuickAction('voice')" class="bg-[#101F17] py-4 rounded-2xl border border-emerald-900/30 flex flex-col items-center gap-1.5 active:scale-95 transition-transform">
+          <span class="material-icons text-emerald-400">mic</span>
+          <span class="text-[10px] font-bold text-gray-300">Voice Entry</span>
+        </button>
+        <button (click)="openQuickAction('mitra')" class="bg-[#101F17] py-4 rounded-2xl border border-emerald-900/30 flex flex-col items-center gap-1.5 active:scale-95 transition-transform">
+          <span class="material-icons text-emerald-400">person_add</span>
+          <span class="text-[10px] font-bold text-gray-300">Add Mitra</span>
+        </button>
+        <button (click)="openQuickAction('trip')" class="bg-[#101F17] py-4 rounded-2xl border border-emerald-900/30 flex flex-col items-center gap-1.5 active:scale-95 transition-transform">
+          <span class="material-icons text-emerald-400">flight_takeoff</span>
+          <span class="text-[10px] font-bold text-gray-300">Trip Group</span>
+        </button>
       </div>
-    </div>
-    <div class="bg-[#0a2a20] p-4 rounded-2xl border border-green-900/40 shadow-xl cursor-pointer active:bg-[#0d382b] transition-colors" (click)="switchTab('you-will-get')">
-      <p class="text-xs text-gray-400 uppercase font-semibold mb-1">You Will Get</p>
-      <div class="flex justify-between items-center">
-        <h2 class="text-xl font-bold text-green-400">₹{{ youWillGet | number:'1.2-2' }}</h2>
-        <span class="text-green-400">→</span>
-      </div>
-    </div>
-    <div class="bg-[#0a2a20] p-4 rounded-2xl border border-green-900/40 shadow-xl">
-      <p class="text-xs text-gray-400 uppercase font-semibold mb-1">Monthly Budget</p>
-      <h2 class="text-xl font-bold text-cyan-400">₹{{ monthlyBudget | number:'1.2-2' }}</h2>
-    </div>
-  </section>
-
-  <section class="bg-[#0a2a20] p-5 rounded-2xl border border-green-900/40 shadow-xl mb-6">
-    <div class="flex justify-between items-center mb-3">
-      <span class="text-sm font-medium text-gray-300">Spent: <span class="text-emerald-400">₹{{ totalSpent }} ({{ spentPercentage | number:'1.0-0' }}%)</span></span>
-      <span class="text-xs text-gray-500">Target: ₹{{ monthlyBudget }}</span>
-    </div>
-    <div class="w-full h-4 bg-[#061a14] rounded-full overflow-hidden border border-green-900/20">
-      <div class="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-yellow-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.5)] transition-all duration-500" [style.width.%]="spentPercentage"></div>
-    </div>
-    <div class="flex justify-between mt-3 text-[10px] text-gray-500 uppercase tracking-widest">
-      <span>Remaining: ₹{{ monthlyBudget - totalSpent }}</span>
-      <span>Current Spent: ₹{{ totalSpent }}</span>
-    </div>
-  </section>
-
-  <div class="mb-2"><h3 class="text-sm font-semibold text-gray-400 uppercase">Quick Actions</h3></div>
-  <section class="grid grid-cols-4 gap-2 mb-8">
-    <div class="flex flex-col items-center gap-2" (click)="openQuickAction('entry')">
-      <button class="w-14 h-14 bg-[#0a2a20] rounded-2xl shadow-lg border border-green-900/50 flex items-center justify-center active:scale-95 transition-all">
-        <span class="material-icons text-emerald-400">add</span>
-      </button>
-      <span class="text-[10px] text-gray-300">Add Entry</span>
-    </div>
-    <div class="flex flex-col items-center gap-2" (click)="openQuickAction('voice')">
-      <button class="w-14 h-14 bg-[#0a2a20] rounded-2xl shadow-lg border border-green-900/50 flex items-center justify-center active:scale-95 transition-all">
-        <span class="material-icons text-emerald-400">mic</span>
-      </button>
-      <span class="text-[10px] text-gray-300">Voice Entry</span>
-    </div>
-    <div class="flex flex-col items-center gap-2" (click)="openQuickAction('mitra')">
-      <button class="w-14 h-14 bg-[#0a2a20] rounded-2xl shadow-lg border border-green-900/50 flex items-center justify-center active:scale-95 transition-all">
-        <span class="material-icons text-emerald-400">person_add</span>
-      </button>
-      <span class="text-[10px] text-gray-300">Add Mitra</span>
-    </div>
-    <div class="flex flex-col items-center gap-2" (click)="openQuickAction('trip')">
-      <button class="w-14 h-14 bg-[#0a2a20] rounded-2xl shadow-lg border border-green-900/50 flex items-center justify-center active:scale-95 transition-all">
-        <span class="material-icons text-emerald-400">groups</span>
-      </button>
-      <span class="text-[10px] text-gray-300">Trip Group</span>
-    </div>
-  </section>
-
-  <section class="pb-12">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-lg font-bold">Recent Transactions</h3>
-      <button class="text-emerald-400 text-sm font-medium">View All</button>
     </div>
 
     <div class="space-y-3">
-      <div *ngIf="recentTransactions.length === 0" class="text-center text-xs text-gray-500 py-4">
-        कोई लाइव ट्रांजैक्शन रिकॉर्ड नहीं मिला। कोटलिन से ट्रिगर करें!
+      <div class="flex justify-between items-center">
+        <h2 class="text-sm font-extrabold text-gray-400 uppercase tracking-wider">Recent Transactions</h2>
+        <button class="text-xs font-bold text-emerald-400">View All</button>
       </div>
 
-      <div *ngFor="let tx of recentTransactions" class="flex items-center justify-between bg-[#0a2a20]/60 p-4 rounded-2xl border border-green-900/20">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-[#061a14] rounded-xl flex items-center justify-center">
-            <span class="material-icons" [ngClass]="tx.type === 'credit' ? 'text-emerald-400' : 'text-red-400'">
-              {{ tx.type === 'credit' ? 'account_balance_wallet' : 'payment' }}
-            </span>
+      <div class="space-y-2.5">
+        <div *ngFor="let tx of recentTransactions" class="bg-[#101F17] p-3.5 rounded-2xl border border-emerald-900/20 flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <div [ngClass]="tx.type === 'credit' ? 'bg-blue-500/10 text-blue-400' : 'bg-red-500/10 text-red-400'" class="w-10 h-10 rounded-xl flex items-center justify-center font-mono font-bold text-sm shadow-inner">
+              {{ tx.type === 'credit' ? 'IN' : 'OUT' }}
+            </div>
+            <div>
+              <p class="text-sm font-bold text-gray-100 capitalize">{{ tx.merchant }}</p>
+              <p class="text-[10px] text-gray-500 mt-0.5 font-mono">{{ tx.timestamp | date:'shortTime' }} • {{ tx.isTagged }}</p>
+            </div>
           </div>
-          <div>
-            <h4 class="font-semibold text-sm text-gray-100">{{ tx.merchant }}</h4>
-            <p class="text-[10px] text-gray-500">{{ tx.timestamp | date:'shortTime' }}</p>
-          </div>
-        </div>
-        <div class="text-right">
-          <p class="font-bold" [ngClass]="tx.type === 'credit' ? 'text-emerald-400' : 'text-red-400'">
-            {{ tx.type === 'credit' ? '+' : '-' }} ₹{{ tx.amount }}
+          <p [ngClass]="tx.type === 'credit' ? 'text-blue-400' : 'text-red-400'" class="font-mono font-black text-base">
+            {{ tx.type === 'credit' ? '+' : '-' }}₹{{ tx.amount }}
           </p>
-          <p class="text-[10px] text-gray-500">({{ tx.type === 'credit' ? 'In' : 'Out' }})</p>
+        </div>
+
+        <div *ngIf="recentTransactions.length === 0" class="text-center py-8 text-xs text-gray-500">
+          आज अभी तक कोई ट्रांजैक्शन रिकॉर्ड नहीं हुआ है।
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <nav class="fixed bottom-0 left-0 right-0 bg-[#0a2a20] border-t border-green-900/50 pt-3 pb-6 px-6 flex justify-between items-center shadow-[0_-5px_20px_rgba(0,0,0,0.5)] z-40" style="padding-bottom: 30px;">
-    <div class="flex flex-col items-center text-emerald-400"><span class="material-icons">home</span><span class="text-[8px] uppercase font-bold">Home</span></div>
-    <div class="flex flex-col items-center text-gray-500"><span class="material-icons">book</span><span class="text-[8px] uppercase font-bold">Khata</span></div>
-    <div class="flex flex-col items-center text-gray-500"><span class="material-icons">analytics</span><span class="text-[8px] uppercase font-bold">Reports</span></div>
-    <div class="flex flex-col items-center text-gray-500"><span class="material-icons">track_changes</span><span class="text-[8px] uppercase font-bold">Goals</span></div>
-    <div class="flex flex-col items-center text-gray-500"><span class="material-icons">person_outline</span><span class="text-[8px] uppercase font-bold">Profile</span></div>
+  <div *ngIf="currentTab !== 'home'" class="p-8 text-center text-gray-400 max-w-md mx-auto pt-20">
+    <span class="material-icons text-5xl text-emerald-500/40 mb-3">construction</span>
+    <h3 class="text-lg font-bold text-gray-200 capitalize">{{ currentTab }} Section</h3>
+    <p class="text-xs text-gray-500 mt-1">यह स्क्रीन मॉड्यूल आर्किटेक्चर के तहत कस्टमाइज़ हो रही है।</p>
+  </div>
+
+  <nav class="fixed bottom-0 left-0 right-0 bg-[#0A120E]/90 backdrop-blur-md border-t border-emerald-900/30 py-2.5 px-6 flex justify-between items-center max-w-lg mx-auto z-40">
+    <button (click)="switchFooterTab('home')" [ngClass]="currentTab === 'home' ? 'text-emerald-400' : 'text-gray-500'" class="flex flex-col items-center gap-0.5 transition-colors">
+      <span class="material-icons">home</span><span class="text-[9px] font-bold">HOME</span>
+    </button>
+    <button (click)="switchFooterTab('khata')" [ngClass]="currentTab === 'khata' ? 'text-emerald-400' : 'text-gray-500'" class="flex flex-col items-center gap-0.5 transition-colors">
+      <span class="material-icons">menu_book</span><span class="text-[9px] font-bold">KHATA</span>
+    </button>
+    <button (click)="switchFooterTab('reports')" [ngClass]="currentTab === 'reports' ? 'text-emerald-400' : 'text-gray-500'" class="flex flex-col items-center gap-0.5 transition-colors">
+      <span class="material-icons">bar_chart</span><span class="text-[9px] font-bold">REPORTS</span>
+    </button>
+    <button (click)="switchFooterTab('goals')" [ngClass]="currentTab === 'goals' ? 'text-emerald-400' : 'text-gray-500'" class="flex flex-col items-center gap-0.5 transition-colors">
+      <span class="material-icons">track_changes</span><span class="text-[9px] font-bold">GOALS</span>
+    </button>
+    <button (click)="switchFooterTab('profile')" [ngClass]="currentTab === 'profile' ? 'text-emerald-400' : 'text-gray-500'" class="flex flex-col items-center gap-0.5 transition-colors">
+      <span class="material-icons">person</span><span class="text-[9px] font-bold">PROFILE</span>
+    </button>
   </nav>
 
-</div>
+  <div *ngIf="tabName === 'quick-action'" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end justify-center">
+    <div class="bg-[#101F17] w-full max-w-md rounded-t-[2.5rem] p-6 border-t border-emerald-900/40 space-y-6 shadow-2xl animate-slide-up">
+      
+      <div class="flex justify-between items-center">
+        <h3 class="text-base font-black tracking-wider uppercase text-gray-300">{{ selectedActionTab }} Sheet</h3>
+        <button (click)="closeDrawer()" class="w-8 h-8 rounded-full bg-[#08130E] text-gray-400 flex items-center justify-center">
+          <span class="material-icons text-sm">close</span>
+        </button>
+      </div>
 
-<div *ngIf="tabName == 'you-will-get'" class="z-50 relative">
-  <app-you-will-get (close)="closeDrawer()"></app-you-will-get>
-</div>
-<div *ngIf="tabName == 'you-will-give'" class="z-50 relative">
-  <app-you-will-give (close)="closeDrawer()"></app-you-will-give>
-</div>
-<div *ngIf="tabName == 'quick-action'" class="z-50 relative">
-  <app-add-actions-drawer [defaultTab]="selectedActionTab" (closeDrawer)="closeDrawer()"></app-add-actions-drawer>
+      <div *ngIf="selectedActionTab === 'entry'" class="space-y-4">
+        <input type="number" [(ngModel)]="entryAmount" placeholder="राशि दर्ज करें (₹)" class="w-full bg-[#08130E] border-none rounded-xl p-4 text-center font-mono font-bold text-2xl text-emerald-400 outline-none focus:ring-2 focus:ring-emerald-500/20">
+        <input type="text" [(ngModel)]="entryMerchant" placeholder="मर्चेंट या विवरण" class="w-full bg-[#08130E] border-none rounded-xl p-3.5 text-sm outline-none text-gray-200">
+        
+        <div class="grid grid-cols-2 gap-3">
+          <button (click)="entryType = 'debit'" [ngClass]="entryType === 'debit' ? 'bg-red-500/20 text-red-400 border-red-500/40' : 'bg-[#08130E] text-gray-500'" class="py-3 rounded-xl border text-xs font-bold transition-all">DEBIT (खर्च)</button>
+          <button (click)="entryType = 'credit'" [ngClass]="entryType === 'credit' ? 'bg-blue-500/20 text-blue-400 border-blue-500/40' : 'bg-[#08130E] text-gray-500'" class="py-3 rounded-xl border text-xs font-bold transition-all">CREDIT (आय)</button>
+        </div>
+
+        <button (click)="submitEntry()" class="w-full bg-emerald-600 text-white font-bold py-4 rounded-xl text-sm active:scale-95 transition-transform mt-2">सुरक्षित करें</button>
+      </div>
+
+      <div *ngIf="selectedActionTab === 'trip'" class="space-y-4">
+        <input type="text" [(ngModel)]="tripName" placeholder="ट्रिप का नाम (उदा: Goa_2026)" class="w-full bg-[#08130E] border-none rounded-xl p-3.5 text-sm outline-none text-gray-200">
+        <input type="text" [(ngModel)]="tripDestination" placeholder="गंतव्य स्थल" class="w-full bg-[#08130E] border-none rounded-xl p-3.5 text-sm outline-none text-gray-200">
+        <input type="number" [(ngModel)]="tripBudget" placeholder="ट्रिप बजट लिमिट (₹)" class="w-full bg-[#08130E] border-none rounded-xl p-3.5 text-sm outline-none text-gray-200 font-mono">
+        
+        <button (click)="submitTrip()" class="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl text-sm active:scale-95 transition-transform mt-2">नया ट्रip शुरू करें</button>
+      </div>
+
+      <div *ngIf="selectedActionTab === 'voice' || selectedActionTab === 'mitra'" class="py-6 text-center text-xs text-gray-500">
+        यह मॉड्यूल नेटिव एंड्रॉइड कोर के साथ इंटीग्रेट हो रहा है...
+      </div>
+
+    </div>
+  </div>
+
 </div>
