@@ -14,6 +14,10 @@ import { DailyReportComponent } from './daily-report/daily-report.component';
 import { FormsModule } from '@angular/forms'
 import { HttpClientModule } from '@angular/common/http';
 import { ToastComponent } from './toast/toast.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from '../interceptors/auth.interceptor';
+// providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }]
+
 
 @NgModule({
   declarations: [
@@ -33,7 +37,7 @@ import { ToastComponent } from './toast/toast.component';
     FormsModule,
     HttpClientModule
   ],
-  providers: [],
+   providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
