@@ -214,6 +214,13 @@ export class LoginComponent {
       next: (res: any) => {
         this.saveSession(res.token, res.user);
         this.toastService.show('🟢 लॉगिन सफल! आपका स्वागत है।', 'success');
+        this.syncWithAndroid(
+          res.token, 
+          res.user.id || res.user._id, 
+          res.user.email, 
+          res.user.phone || '', 
+          res.user.activeTripId || ''
+        );
         this.router.navigate(['/home']);
       },
       error: (err) => {
@@ -265,10 +272,21 @@ export class LoginComponent {
   openForgotModal() { this.isForgotPopupOpen = true; this.forgotEmail = ''; this.forgotNewPassword = ''; this.popupMessage = ''; }
   closeForgotModal() { this.isForgotPopupOpen = false; }
 
-  private syncWithAndroid(token:any, userId: string, email: string, phone: string, tripId: string) {
-    if ((window as any).AndroidBridge) {
-      if ((window as any).AndroidBridge.saveUserData) (window as any).AndroidBridge.saveUserData(userId, email, phone, tripId);
-      else if ((window as any).AndroidBridge.sendUserSessionToNative) (window as any).AndroidBridge.sendUserSessionToNative(userId, email, phone, tripId);
+  private syncWithAndroid(token: string, userId: string, email: string, phone: string, activeTripId: string) {
+    const authData = {
+      token: token,
+      userId: userId,
+      email: email,
+      phone: phone,
+      activeTripId: activeTripId
+    };
+
+    // चैक करें कि क्या 'MyAppBridge' नाम का एंड्रॉइड इंटरफ़ेस उपलब्ध है
+    if ((window as any).MyAppBridge && typeof (window as any).MyAppBridge.updateAuthSession === 'function') {
+      (window as any).MyAppBridge.updateAuthSession(JSON.stringify(authData));
+      console.log('🟢 Auth data sent to Android via WebView Bridge');
+    } else {
+      console.log('🌐 Standard Web Browser Mode: App bridge container not detected.');
     }
   }
 }
