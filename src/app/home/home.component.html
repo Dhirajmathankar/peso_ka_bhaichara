@@ -335,7 +335,7 @@
 
 </div> -->
 
-<div class="min-h-screen bg-[#0A120E] text-gray-100 pb-28 relative font-sans selection:bg-emerald-500/30">
+<div class="min-h-screen bg-[#0A120E] text-gray-100 pb-28 relative font-sans selection:bg-emerald-500/30" style="padding-top: 40px;">
   
   <div *ngIf="currentTab === 'home'" class="p-4 space-y-5 max-w-md mx-auto">
     
@@ -465,10 +465,15 @@
     </div>
   </div>
 
-  <div *ngIf="currentTab !== 'home'" class="p-8 text-center text-gray-400 max-w-sm mx-auto pt-24 space-y-2">
+  <div *ngIf="currentTab !== 'home' && currentTab !== 'khata'" class="p-8 text-center text-gray-400 max-w-sm mx-auto pt-24 space-y-2">
     <span class="material-icons text-5xl text-emerald-500/30 animate-bounce">construction</span>
     <h3 class="text-base font-bold text-gray-200 capitalize">{{ currentTab }} Section</h3>
     <p class="text-xs text-gray-500">यह स्क्रीन मॉड्यूल आर्किटेक्चर के तहत कस्टमाइज़ हो रही है.</p>
+  </div>
+
+
+  <div *ngIf="currentTab == 'khata'" class="text-center text-gray-400 ">
+    <app-khata></app-khata>
   </div>
 
   <nav class="fixed bottom-0 left-0 right-0 bg-[#0A120E]/95 backdrop-blur-md border-t border-emerald-900/20 pt-2 pb-5 px-4 flex justify-between items-center z-40 max-w-md mx-auto">

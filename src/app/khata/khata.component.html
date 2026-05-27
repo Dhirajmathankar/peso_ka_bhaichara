@@ -1,0 +1,198 @@
+<div class="space-y-5 max-w-md mx-auto" >
+
+	<div class="flex justify-between items-center">
+		<div class="max-w-[75%]">
+			<h1 class="text-xl font-black tracking-tight text-white">Account Home</h1>
+			<p class="text-[11px] text-emerald-400/90 font-mono mt-0.5 truncate flex items-center gap-1">
+				<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+				Active: {{ activeTripName }}
+			</p>
+		</div>
+		<div>
+			<button
+				class="w-10 h-10 rounded-xl bg-[#12221A] flex items-center justify-center border border-emerald-900/40 text-emerald-400 active:scale-90 transition-transform shadow-md">
+				<span class="material-icons text-xl">notifications</span>
+			</button>
+		</div>
+	</div>
+
+	<div class="min-h-screen bg-[#0A120E] text-gray-100 pb-28 relative font-sans selection:bg-emerald-500/30">
+
+		<div class="p-4 space-y-5 max-w-md mx-auto">
+
+			<div class="flex justify-between items-center pt-2">
+				<div class="max-w-[75%]">
+					<h1 class="text-xl font-black tracking-tight text-white">खाताबुक डैशबोर्ड</h1>
+					<p class="text-[11px] text-emerald-400/90 font-mono mt-0.5 truncate flex items-center gap-1">
+						<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+						लेज़र सिंक: एक्टिवेटेड
+					</p>
+				</div>
+				<div>
+					<button
+						class="w-10 h-10 rounded-xl bg-[#12221A] flex items-center justify-center border border-emerald-900/40 text-emerald-400 active:scale-90 transition-transform shadow-md">
+						<span class="material-icons text-xl">sync</span>
+					</button>
+				</div>
+			</div>
+
+			<div class="summary-cards space-y-3" *ngIf="khataSummary">
+				<div
+					class="p-5 rounded-2xl bg-[#0F1B15] border border-emerald-900/30 shadow-lg relative overflow-hidden">
+					<h3 class="text-[10px] uppercase tracking-wider text-gray-400 font-bold">कुल शुद्ध स्थिति (Net
+						Status)</h3>
+					<p class="text-3xl font-black font-mono mt-2 transition-colors duration-300"
+						[ngClass]="{'text-[#00e676]': khataSummary.totalNetKhataBalance >= 0, 'text-rose-500': khataSummary.totalNetKhataBalance < 0}">
+						₹{{ khataSummary.totalNetKhataBalance }}
+					</p>
+					<div class="absolute -right-2 -bottom-2 opacity-5 pointer-events-none">
+						<span class="material-icons text-7xl text-white">account_balance_wallet</span>
+					</div>
+				</div>
+
+				<div class="grid grid-cols-2 gap-3">
+					<div class="p-4 rounded-xl bg-[#0F1B15] border border-emerald-900/20 shadow-md">
+						<div class="flex items-center gap-1.5">
+							<span class="w-2 h-2 rounded-full bg-[#00e676]"></span>
+							<h3 class="text-[9px] uppercase tracking-wider text-gray-400 font-bold truncate">आपको
+								मिलेंगे</h3>
+						</div>
+						<p class="text-lg font-black font-mono text-[#00e676] mt-1">₹{{
+							khataSummary.youWillGetFromOthers }}</p>
+					</div>
+
+					<div class="p-4 rounded-xl bg-[#0F1B15] border border-emerald-900/20 shadow-md">
+						<div class="flex items-center gap-1.5">
+							<span class="w-2 h-2 rounded-full bg-rose-500"></span>
+							<h3 class="text-[9px] uppercase tracking-wider text-gray-400 font-bold truncate">आपको देने
+								हैं</h3>
+						</div>
+						<p class="text-lg font-black font-mono text-rose-500 mt-1">₹{{ khataSummary.youWillGiveToOthers
+							}}</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="p-5 rounded-2xl bg-[#0F1B15] border border-emerald-900/30 shadow-lg space-y-4">
+				<h2 class="text-sm font-black tracking-tight text-emerald-400 flex items-center gap-1.5">
+					<span class="material-icons text-lg">person_add</span> नया खाता ट्रांजैक्शन जोड़ें
+				</h2>
+
+				<form [formGroup]="khataForm" (ngSubmit)="onSubmit()" class="space-y-3.5">
+
+					<div class="flex gap-2">
+						<div class="relative flex-1">
+							<input type="text" formControlName="personName" placeholder="नाम दर्ज करें" required
+								class="w-full px-3.5 py-3 bg-[#070C0A] border border-emerald-900/50 rounded-xl text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all font-medium" />
+						</div>
+						<button type="button" (click)="pickMobileContact()"
+							class="px-3.5 bg-[#12221A] text-emerald-400 border border-emerald-900/40 rounded-xl text-xs font-bold flex items-center gap-1 active:scale-95 transition-transform shadow-md whitespace-nowrap">
+							<span class="material-icons text-sm">contacts</span> फोनबुक
+						</button>
+					</div>
+
+					<div>
+						<input type="tel" formControlName="personPhone" placeholder="मोबाइल नंबर (10 डिजिट)" required
+							class="w-full px-3.5 py-3 bg-[#070C0A] border border-emerald-900/50 rounded-xl text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all font-mono" />
+					</div>
+
+					<div class="grid grid-cols-12 gap-2.5">
+						<div class="col-span-5">
+							<input type="number" formControlName="amount" placeholder="अमाउंट ₹" required
+								class="w-full px-3.5 py-3 bg-[#070C0A] border border-emerald-900/50 rounded-xl text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all font-mono font-bold" />
+						</div>
+						<div class="col-span-7">
+							<select formControlName="khataType" required
+								class="w-full px-2.5 py-3 bg-[#070C0A] border border-emerald-900/50 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-400 transition-all font-medium appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2310B981%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-[right_12px_center] bg-no-repeat">
+								<option value="will-get" class="bg-[#0A120E]">🟢 पैसे लेना है (उधार दिया)</option>
+								<option value="will-give" class="bg-[#0A120E]">🔴 पैसे देना है (उधार लिया)</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-2 gap-2.5">
+						<div>
+							<input type="text" formControlName="reason" placeholder="वजह (Chai, Rent)"
+								class="w-full px-3.5 py-3 bg-[#070C0A] border border-emerald-900/50 rounded-xl text-sm text-white placeholder-gray-600 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all font-medium" />
+						</div>
+						<div>
+							<select formControlName="paymentMode"
+								class="w-full px-3.5 py-3 bg-[#070C0A] border border-emerald-900/50 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-400 transition-all font-medium appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2310B981%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_10px] bg-[right_12px_center] bg-no-repeat">
+								<option value="cash" class="bg-[#0A120E]">💵 Cash (नकद)</option>
+								<option value="online" class="bg-[#0A120E]">📱 Online (UPI/Bank)</option>
+							</select>
+						</div>
+					</div>
+
+					<button type="submit" [disabled]="khataForm.invalid || isLoading"
+						class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 disabled:bg-[#1F2937] disabled:text-gray-600 text-[#090F0C] font-black rounded-xl text-sm tracking-wide shadow-lg shadow-emerald-500/10 active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+						<span class="material-icons text-lg" *ngIf="!isLoading">save_alt</span>
+						{{ isLoading ? 'सेव हो रहा है...' : 'सुरक्षित करें और अलर्ट भेजें' }}
+					</button>
+				</form>
+			</div>
+
+			<div class="history-container space-y-3">
+				<h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1">
+					<span class="material-icons text-base">receipt_long</span> उधारी इतिहास (Ledger History)
+				</h2>
+
+				<div *ngIf="isLoadingList"
+					class="p-8 text-center text-xs text-gray-500 bg-[#0F1B15] border border-dashed border-emerald-900/30 rounded-xl font-mono">
+					डेटा लोड हो रहा है...
+				</div>
+
+				<div *ngIf="!isLoadingList && khataHistory.length === 0"
+					class="p-8 text-center text-xs text-gray-500 bg-[#0F1B15] border border-dashed border-emerald-900/30 rounded-xl font-medium">
+					कोई खाता रिकॉर्ड नहीं मिला। आज ही पहली एंट्री जोड़ें!
+				</div>
+
+				<div class="list-wrapper space-y-2.5" *ngIf="!isLoadingList && khataHistory.length > 0">
+					<div class="p-4 rounded-xl bg-[#0F1B15] border border-white/[0.02] shadow-md flex justify-between items-center transition-all relative overflow-hidden"
+						*ngFor="let txn of khataHistory"
+						[ngClass]="txn.type === 'will-get' ? 'border-l-4 border-l-[#00e676]' : 'border-l-4 border-l-rose-500'">
+
+						<div class="flex items-center gap-3">
+							<div
+								class="w-10 h-10 rounded-full bg-[#070C0A] border border-emerald-900/40 flex items-center justify-center font-black text-xs text-[#00e676] shadow-inner uppercase">
+								{{ getAvatarLetter(txn?.name) }}
+							</div>
+
+							<div class="space-y-0.5">
+								<h4 class="text-sm font-bold text-white tracking-tight">{{ txn.name }}</h4>
+								<p class="text-[11px] text-gray-500 font-mono flex items-center gap-0.5">📱 {{ txn.phone
+									}}</p>
+								<p class="text-[11px] text-gray-400 font-medium">
+									<span>📝 {{ txn.reason }}</span>
+									<span
+										class="ml-1.5 px-1.5 py-0.5 text-[9px] bg-white/[0.04] text-emerald-400 font-mono rounded border border-emerald-950">{{
+										txn.mode | uppercase }}</span>
+								</p>
+
+								<span
+									class="inline-flex items-center text-[9px] font-bold px-1.5 py-0.5 rounded-md mt-1"
+									[ngClass]="txn.alertStatus === 'sent' ? 'bg-emerald-500/10 text-[#00e676]' : 'bg-rose-500/10 text-rose-400'">
+									{{ txn.alertStatus === 'sent' ? '📲 SMS Sent' : '⚠️ Pending' }}
+								</span>
+							</div>
+						</div>
+
+						<div class="text-right space-y-0.5">
+							<p class="text-base font-black font-mono tracking-tight"
+								[ngClass]="txn.type === 'will-get' ? 'text-[#00e676]' : 'text-rose-500'">
+								₹{{ txn.amount }}
+							</p>
+							<span class="text-[10px] font-bold uppercase tracking-wide block"
+								[ngClass]="txn.type === 'will-get' ? 'text-emerald-400/70' : 'text-rose-400/70'">
+								{{ txn.type === 'will-get' ? 'लेना है' : 'देना है' }}
+							</span>
+							<p class="text-[9px] text-gray-600 font-mono">{{ txn.createdAt | date:'shortTime' }}</p>
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>

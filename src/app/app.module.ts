@@ -11,11 +11,13 @@ import { YouWillGetComponent } from './you-will-get/you-will-get.component';
 import { YouWillGiveComponent } from './you-will-give/you-will-give.component';
 import { AddActionsDrawerComponent } from './add-actions-drawer/add-actions-drawer.component';
 import { DailyReportComponent } from './daily-report/daily-report.component';
-import { FormsModule } from '@angular/forms'
+// import { FormsModule } from '@angular/forms'
 import { HttpClientModule } from '@angular/common/http';
 import { ToastComponent } from './toast/toast.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../interceptors/auth.interceptor';
+import { KhataComponent } from './khata/khata.component';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 // providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }]
 
 
@@ -29,13 +31,15 @@ import { AuthInterceptor } from '../interceptors/auth.interceptor';
     YouWillGiveComponent,
     AddActionsDrawerComponent,
     DailyReportComponent,
-    ToastComponent
+    ToastComponent,
+    KhataComponent
   ],
   imports: [
     BrowserModule,
     RouterModule.forRoot(routes, { useHash: true }),
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
    providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
   bootstrap: [AppComponent]
