@@ -1,4 +1,4 @@
-<div class="chat-container fixed inset-0 z-50 bg-[#0A120E] flex flex-col max-w-md mx-auto min-h-screen text-gray-100">
+<div class="chat-container fixed inset-0 z-50 bg-[#0A120E] flex flex-col max-w-md mx-auto min-h-screen text-gray-100" style="    padding: 40px 0px;">
   
   <div class="p-4 bg-[#0F1B15] border-b border-emerald-900/40 flex items-center justify-between sticky top-0 z-10 shadow-md">
     <div class="flex items-center gap-3">
@@ -71,7 +71,7 @@
     </div>
   </div>
 
-  <div class="p-3 bg-[#0F1B15] border-t border-emerald-900/30 flex items-center gap-2 sticky bottom-0">
+  <div class="p-3 bg-[#0F1B15] border-t border-emerald-900/30 flex items-center gap-2 sticky bottom-0" style="position: absolute;width: 100%; bottom: 40px;">
     <input type="text" [(ngModel)]="typedText" (keyup.enter)="sendTextMessage()" placeholder="संदेश टाइप करें..."
       class="flex-1 px-4 py-3 bg-[#070C0A] border border-emerald-900/50 rounded-xl text-xs text-white placeholder-gray-600 focus:outline-none focus:border-emerald-400" />
     <button (click)="sendTextMessage()" class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-black active:scale-95 transition-transform shadow-lg shadow-emerald-500/10">
