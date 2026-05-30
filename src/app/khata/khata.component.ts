@@ -124,4 +124,15 @@ getAvatarLetter(name: any): string {
   const stringName = String(name).trim();
   return stringName ? stringName.charAt(0).toUpperCase() : '?';
 }
+selectedChatPerson: { name: string, phone: string } | null = null;
+
+// क्लिक होने पर इस फंक्शन को कॉल करेंगे
+openPersonalChat(name: string, phone: string) {
+  this.selectedChatPerson = { name, phone };
+}
+
+closePersonalChat() {
+  this.selectedChatPerson = null;
+  this.loadKhataDashboard(); // चैट बंद होने पर लेज़र रिफ्रेश कर लें
+}
 }

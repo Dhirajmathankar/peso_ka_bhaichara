@@ -1,0 +1,82 @@
+<div class="chat-container fixed inset-0 z-50 bg-[#0A120E] flex flex-col max-w-md mx-auto min-h-screen text-gray-100">
+  
+  <div class="p-4 bg-[#0F1B15] border-b border-emerald-900/40 flex items-center justify-between sticky top-0 z-10 shadow-md">
+    <div class="flex items-center gap-3">
+      <button (click)="goBack()" class="w-8 h-8 rounded-lg bg-[#070C0A] flex items-center justify-center text-emerald-400 active:scale-90 transition-transform">
+        <span class="material-icons text-xl">arrow_back</span>
+      </button>
+      <div>
+        <h3 class="text-sm font-black text-white tracking-tight">{{ selectedPerson?.name }}</h3>
+        <p class="text-[10px] font-mono text-emerald-400/80">📱 {{ selectedPerson?.phone }}</p>
+      </div>
+    </div>
+    
+    <div class="flex gap-1.5">
+      <button (click)="toggleLedgerBox('will-get')" class="px-2 py-1 bg-emerald-500/10 text-[#00e676] border border-emerald-500/20 rounded-lg text-[10px] font-bold flex items-center gap-0.5">
+        <span class="material-icons text-xs">add</span> लेना है
+      </button>
+      <button (click)="toggleLedgerBox('will-give')" class="px-2 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-lg text-[10px] font-bold flex items-center gap-0.5">
+        <span class="material-icons text-xs">remove</span> देना है
+      </button>
+    </div>
+  </div>
+
+  <div class="p-4 bg-[#12221A] border-b border-emerald-900/30 space-y-3 animate-fade-in" *ngIf="showLedgerBox">
+    <div class="flex justify-between items-center">
+      <span class="text-xs font-bold" [ngClass]="ledgerType === 'will-get' ? 'text-[#00e676]' : 'text-rose-400'">
+        {{ ledgerType === 'will-get' ? '🟢 पैसे लेना है (उधार प्रविष्टि)' : '🔴 पैसे देना है (दायित्व प्रविष्टि)' }}
+      </span>
+      <button (click)="showLedgerBox = false" class="text-gray-500 hover:text-white"><span class="material-icons text-sm">close</span></button>
+    </div>
+    <div class="grid grid-cols-12 gap-2">
+      <input type="number" [(ngModel)]="ledgerAmount" placeholder="अमाउंट ₹" class="col-span-4 px-2.5 py-2 bg-[#070C0A] border border-emerald-900/50 rounded-xl text-xs text-white placeholder-gray-700 font-mono font-bold focus:outline-none" />
+      <input type="text" [(ngModel)]="ledgerReason" placeholder="वजह (e.g. Dinner, Diesel)" class="col-span-5 px-2.5 py-2 bg-[#070C0A] border border-emerald-900/50 rounded-xl text-xs text-white placeholder-gray-700 focus:outline-none" />
+      <button (click)="sendLedgerEntry()" class="col-span-3 bg-emerald-500 text-black rounded-xl text-[11px] font-black tracking-wide flex items-center justify-center">
+        भेजें
+      </button>
+    </div>
+  </div>
+
+  <div #chatScroll class="flex-1 overflow-y-auto p-4 space-y-3.5 bg-[radial-gradient(at_top_right,_var(--tw-gradient-stops))] from-[#0d1f14] via-[#0A120E] to-[#050907]">
+    <div *ngIf="isLoading" class="text-center text-xs font-mono text-gray-600 py-4">चैट लोड हो रही है...</div>
+    
+    <div *ngFor="let msg of messages" class="flex flex-col w-full">
+      
+      <div *ngIf="msg.messageType === 'TEXT'" class="max-w-[75%] p-3 rounded-2xl text-xs font-medium shadow-md"
+        [ngClass]="msg.sender === 'USER' ? 'bg-[#00e676] text-[#050907] rounded-tr-none self-end' : 'bg-[#0F1B15] border border-emerald-900/30 text-white rounded-tl-none self-start'">
+        <p>{{ msg.text }}</p>
+        <span class="block text-[8px] text-right mt-1 opacity-60 font-mono">{{ msg.createdAt | date:'shortTime' }}</span>
+      </div>
+
+      <div *ngIf="msg.messageType === 'KHATA_ENTRY'" class="max-w-[80%] rounded-xl border overflow-hidden shadow-lg self-center"
+        [ngClass]="msg.khataDetails?.type === 'will-get' ? 'bg-[#102419] border-emerald-500/40' : 'bg-[#291418] border-rose-500/40'">
+        <div class="px-3.5 py-2.5 flex justify-between items-center gap-8 border-b border-white/[0.03]">
+          <div>
+            <span class="text-[9px] uppercase tracking-wider font-black opacity-60">खाता ट्रांजैक्शन</span>
+            <h4 class="text-xs font-bold text-gray-200 mt-0.5">{{ msg.khataDetails?.reason }}</h4>
+          </div>
+          <div class="text-right">
+            <h2 class="text-base font-mono font-black" [ngClass]="msg.khataDetails?.type === 'will-get' ? 'text-[#00e676]' : 'text-rose-400'">
+              ₹{{ msg.khataDetails?.amount }}
+            </h2>
+            <span class="text-[9px] font-bold opacity-70">{{ msg.khataDetails?.type === 'will-get' ? 'लेना है' : 'देना है' }}</span>
+          </div>
+        </div>
+        <div class="px-3.5 py-1.5 bg-black/20 flex justify-between items-center text-[9px] font-mono text-gray-400">
+          <span>{{ msg.createdAt | date:'mediumDate' }} • {{ msg.createdAt | date:'shortTime' }}</span>
+          <span class="text-emerald-400 font-bold">✓ सिंक हो गया</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="p-3 bg-[#0F1B15] border-t border-emerald-900/30 flex items-center gap-2 sticky bottom-0">
+    <input type="text" [(ngModel)]="typedText" (keyup.enter)="sendTextMessage()" placeholder="संदेश टाइप करें..."
+      class="flex-1 px-4 py-3 bg-[#070C0A] border border-emerald-900/50 rounded-xl text-xs text-white placeholder-gray-600 focus:outline-none focus:border-emerald-400" />
+    <button (click)="sendTextMessage()" class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-black active:scale-95 transition-transform shadow-lg shadow-emerald-500/10">
+      <span class="material-icons text-xl">send</span>
+    </button>
+  </div>
+
+</div>
