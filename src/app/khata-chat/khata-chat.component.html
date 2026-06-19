@@ -37,7 +37,7 @@
     </div>
   </div>
 
-  <div #chatScroll class="flex-1 overflow-y-auto p-4 space-y-3.5 bg-[radial-gradient(at_top_right,_var(--tw-gradient-stops))] from-[#0d1f14] via-[#0A120E] to-[#050907]">
+  <div #chatScroll class="flex-1 overflow-y-auto p-4 space-y-3.5 bg-[radial-gradient(at_top_right,_var(--tw-gradient-stops))] from-[#0d1f14] via-[#0A120E] to-[#050907]" style="padding-bottom: 170px;">
     <div *ngIf="isLoading" class="text-center text-xs font-mono text-gray-600 py-4">चैट लोड हो रही है...</div>
     
     <div *ngFor="let msg of messages" class="flex flex-col w-full">
