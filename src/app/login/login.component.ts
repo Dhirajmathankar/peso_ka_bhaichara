@@ -111,8 +111,6 @@
 //     }
 //   }
 // }
-
-
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -142,18 +140,19 @@ export class LoginComponent implements OnInit {
     private toastService: ToastService
   ) {}
 
-  // 1. जब भी लॉगिन पेज लोड होगा, यह चेक करेगा कि यूजर पहले से लॉगइन्ड है या नहीं
+  // 1. पेज लोड होते ही ऑटो-लॉगिन चेक करने के लिए
   ngOnInit() {
     const savedToken = localStorage.getItem('token');
     const savedUserId = localStorage.getItem('userId');
 
-    if (savedToken && savedUserId) {
-      console.log('🟢 Auto-login detected: User is already logged in.');
+    // सुनिश्चित करें कि टोकन वैलिड है और 'undefined' या 'null' स्ट्रिंग नहीं है
+    if (savedToken && savedToken !== 'undefined' && savedToken !== 'null' && savedUserId) {
+      console.log('🟢 Auto-login active: Valid session found.');
       
       // सॉकेट कनेक्शन दोबारा चालू करें
       this.socketService.connectSocket();
 
-      // एंड्रॉइड को दोबारा डेटा भेजें (ताकि ऐप सिंक रहे)
+      // एंड्रॉइड वेबव्यू कंटेनर को दोबारा डेटा भेजें (ऐप सिंक रखने के लिए)
       this.syncWithAndroid(
         savedToken,
         savedUserId,
@@ -162,7 +161,7 @@ export class LoginComponent implements OnInit {
         localStorage.getItem('activeTripId') || ''
       );
 
-      // सीधे होम पेज पर भेजें
+      // यूजर को सीधे होम स्क्रीन पर रीडायरेक्ट करें
       this.router.navigate(['/home']);
     }
   }
@@ -172,19 +171,17 @@ export class LoginComponent implements OnInit {
     
     this.authService.login(payload).subscribe({
       next: (res: any) => {
-        this.saveSession(res.token, res.user);
-        this.toastService.show('🟢 लॉगिन सफल! आपका स्वागत है।', 'success');
-        this.syncWithAndroid(
-          res.token, 
-          res.user.id || res.user._id, 
-          res.user.email, 
-          res.user.phone || '', 
-          res.user.activeTripId || ''
-        );
-        this.router.navigate(['/home']);
+        // सेफ्टी चेक: यदि बैकएंड से टोकन सही आया है तभी आगे बढ़ें
+        if (res && res.token) {
+          this.saveSession(res.token, res.user);
+          this.toastService.show('🟢 लॉगिन सफल! आपका स्वागत है।', 'success');
+          this.router.navigate(['/home']);
+        } else {
+          this.toastService.show('❌ लॉगिन विफल: टोकन नहीं मिला।', 'error');
+        }
       },
       error: (err) => {
-        this.toastService.show('❌ सर्वर एरर: फोन और नाम आवश्यक हैं!', 'error');
+         this.toastService.show('❌ सर्वर एरर: फोन और नाम आवश्यक हैं!', 'error');
       }
     });
   }
@@ -218,15 +215,26 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  // 2. sessionStorage को बदलकर localStorage किया गया ताकि डेटा डिलीट न हो
+  // 2. डेटा को परमानेंट रखने के लिए localStorage में सेव कर रहे हैं
   private saveSession(token: string, user: any) {
-    localStorage.setItem('token', token);
-    localStorage.setItem('email', user.email);
-    localStorage.setItem('phone', user.phone || '');
-    localStorage.setItem('userId', user.id || user._id);
-    localStorage.setItem('activeTripId', user.activeTripId || '');
+    if (!token || token === 'undefined' || token === 'null') {
+      console.error('❌ Cannot save session: Invalid token received.');
+      return;
+    }
 
-    this.syncWithAndroid(token , user.id || user._id, user.email, user.phone || '', user.activeTripId || '');
+    const userId = user.id || user._id || '';
+    const email = user.email || '';
+    const phone = user.phone || '';
+    const activeTripId = user.activeTripId || '';
+
+    localStorage.setItem('token', token);
+    localStorage.setItem('email', email);
+    localStorage.setItem('phone', phone);
+    localStorage.setItem('userId', userId);
+    localStorage.setItem('activeTripId', activeTripId);
+
+    // एंड्रॉइड ऐप और सॉकेट को सिंक करें
+    this.syncWithAndroid(token, userId, email, phone, activeTripId);
     this.socketService.connectSocket();
   }
 
@@ -242,6 +250,7 @@ export class LoginComponent implements OnInit {
       activeTripId: activeTripId
     };
 
+    // चैक करें कि क्या 'MyAppBridge' नाम का एंड्रॉइड इंटरफ़ेस उपलब्ध है
     if ((window as any).MyAppBridge && typeof (window as any).MyAppBridge.updateAuthSession === 'function') {
       (window as any).MyAppBridge.updateAuthSession(JSON.stringify(authData));
       console.log('🟢 Auth data sent to Android via WebView Bridge');
