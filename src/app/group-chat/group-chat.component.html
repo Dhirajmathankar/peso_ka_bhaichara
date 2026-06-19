@@ -1,0 +1,70 @@
+<div class="flex flex-col h-screen bg-[#0A120E] text-gray-100 max-w-md mx-auto border-x border-emerald-950">
+  
+  <div class="p-4 bg-[#0F1B15] border-b border-emerald-900/30 flex justify-between items-center shadow-lg">
+    <div>
+      <h2 class="text-sm font-black text-white uppercase tracking-wider">{{ currentGroup?.groupName }}</h2>
+      <p class="text-[10px] font-mono text-emerald-400">⚡ {{ currentGroup?.groupType }} ROOM ACTIVE</p>
+    </div>
+    <button (click)="showExpenseModal = !showExpenseModal" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black rounded-xl shadow-md transition-all active:scale-95">
+      💰 खर्च जोड़ें
+    </button>
+  </div>
+
+  <div *ngIf="showExpenseModal" class="p-4 bg-[#12221A] border-b border-emerald-800/30 space-y-3 shadow-inner">
+    <div class="grid grid-cols-12 gap-2">
+      <input type="number" [(ngModel)]="expenseAmount" placeholder="रुपये ₹" class="col-span-4 px-3 py-2 bg-[#070C0A] border border-emerald-900 rounded-xl text-xs font-mono font-bold text-white focus:outline-none focus:border-emerald-400" />
+      <input type="text" [(ngModel)]="expenseDesc" placeholder="किस चीज़ पर खर्च किया?" class="col-span-5 px-3 py-2 bg-[#070C0A] border border-emerald-900 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-400" />
+      <button (click)="submitExpense()" class="col-span-3 bg-[#00e676] text-black rounded-xl text-xs font-black active:scale-95 transition-all">
+        बांटें
+      </button>
+    </div>
+  </div>
+
+  <div #scrollContainer class="flex-1 overflow-y-auto p-4 space-y-4">
+    <div *ngFor="let msg of messages" class="w-full flex flex-col">
+      
+      <div *ngIf="msg.messageType === 'TEXT'" class="max-w-[75%] p-3 rounded-2xl text-xs font-medium shadow-md leading-relaxed break-words"
+        [ngClass]="msg.senderId === myUserId ? 'bg-[#00e676] text-black rounded-tr-none self-end' : 'bg-[#0F1B15] border border-emerald-900/30 text-white rounded-tl-none self-start'">
+        <span class="block text-[9px] font-bold text-emerald-400/80 mb-0.5" *ngIf="msg.senderId !== myUserId">&#64;{{ msg.senderName }}</span>
+        <p>{{ msg.text }}</p>
+      </div>
+
+      <div *ngIf="msg.messageType === 'GROUP_EXPENSE'" class="w-[85%] bg-[#102419] border border-emerald-500/20 rounded-xl overflow-hidden shadow-xl self-center my-1">
+        <div class="p-3 bg-black/20 flex justify-between items-center border-b border-white/[0.02]">
+          <div>
+            <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest">&#64;{{ msg.senderName }} ने खर्च किए</span>
+            <h4 class="text-xs font-black text-gray-200 mt-0.5">{{ msg.groupKhataDetails?.description }}</h4>
+          </div>
+          <h2 class="text-sm font-mono font-black text-[#00e676]">₹{{ msg.groupKhataDetails?.totalAmount }}</h2>
+        </div>
+        <div class="p-3 space-y-1.5 bg-[#0b1811]">
+          <div *ngFor="let split of msg.groupKhataDetails?.splitDetails" class="flex justify-between items-center text-[11px] font-mono opacity-80">
+            <span>👤 मेंबर आईडी: ...{{ split.userId | slice:-4 }}</span>
+            <span class="text-rose-400 font-bold">हिस्सा: ₹{{ split.shareAmount }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="msg.messageType === 'PAYMENT_SETTLE'" class="w-[80%] bg-[#221418] border border-rose-500/20 rounded-xl overflow-hidden shadow-lg self-center my-1 text-center p-3">
+        <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-400 flex items-center justify-center mx-auto mb-1">
+          <span class="material-icons text-sm">check_circle</span>
+        </div>
+        <h4 class="text-xs font-bold text-gray-300">
+          <span class="text-emerald-400 font-black">{{ msg.senderName }}</span> ने ऑनलाइन हिसाब चुकता किया
+        </h4>
+        <h1 class="text-base font-mono font-black text-rose-400 my-1">₹{{ msg.paymentDetails?.amountPaid }}</h1>
+        <p class="text-[9px] font-mono text-gray-500">Txn Ref: {{ msg.paymentDetails?.transactionId | slice:0:12 }}...</p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="p-3 bg-[#0F1B15] border-t border-emerald-900/20 flex gap-2">
+    <input type="text" [(ngModel)]="typedText" (keyup.enter)="sendText()" placeholder="ग्रुप में कुछ कहें या साझा करें..."
+      class="flex-1 px-4 py-3 bg-[#070C0A] border border-emerald-900/50 rounded-xl text-xs text-white placeholder-gray-600 focus:outline-none focus:border-emerald-400 font-medium" />
+    <button (click)="sendText()" class="w-11 h-11 rounded-xl bg-emerald-500 text-black shadow-lg flex items-center justify-center active:scale-95 transition-transform">
+      <span class="material-icons text-base">send</span>
+    </button>
+  </div>
+
+</div>

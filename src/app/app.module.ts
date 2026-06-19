@@ -19,6 +19,7 @@ import { AuthInterceptor } from '../interceptors/auth.interceptor';
 import { KhataComponent } from './khata/khata.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { KhataChatComponent } from './khata-chat/khata-chat.component';
+import { GroupChatComponent } from './group-chat/group-chat.component';
 // providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }]
 
 
@@ -34,7 +35,8 @@ import { KhataChatComponent } from './khata-chat/khata-chat.component';
     DailyReportComponent,
     ToastComponent,
     KhataComponent,
-    KhataChatComponent
+    KhataChatComponent,
+    GroupChatComponent
   ],
   imports: [
     BrowserModule,
